@@ -17,7 +17,7 @@
         <p class="text-center text-gray-600 mb-12">Browse our curated selection of high-quality fashion items.</p>
 
         <!-- Start Category Filters -->
-        <div class="flex justify-center space-x-2 sm:space-x-4 mb-12">
+        <div class="flex justify-center space-x-2 sm:space-x-4 mb-8">
             <a href="{{route('client.shop')}}"
                class="px-4 py-2 rounded-full font-semibold shadow-sm hover:bg-black hover:text-white transition-colors @if(Request::routeIs('client.shop')) bg-black text-white @endif">
                 All
@@ -78,14 +78,16 @@
         {{-- End Products Grid --}}
 
         {{--  Pagination  --}}
-        <div class="mt-[65px]">
-            {{$products->links()}}
-        </div>
+        @if(count($products) > 0)
+            <div class="mt-[65px]">
+                {{$products->links()}}
+            </div>
+        @endif
         {{--  End Pagination  --}}
 
         {{-- No Product Error Message --}}
         @if(count($products) <= 0)
-            <div class="text-center col-span-full py-16">
+            <div class="text-center col-span-full py-0">
                 <h3 class="text-xl font-semibold">No Products Found</h3>
                 <p class="text-gray-500 text-lg mt-2">Try adjusting your search or category filters.</p>
             </div>

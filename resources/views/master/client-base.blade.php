@@ -14,7 +14,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide-vue-next"></script>
-    <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
 
     {{--  FontAwesome CDN  --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha512-DxV+EoADOkOygM4IR9yXP8Sb2qwgidEmeqAEmDKIOfPRQZOWbXCzLC6vjbZyy0vPisbH2SyW27+ddLVCN+OMzQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -45,19 +44,6 @@
             outline-offset: 2px;
         }
 
-        #profile-wrapper{
-            & #menu-wrapper{
-                display: none;
-            }
-        }
-
-        #profile-wrapper:has(input[type=checkbox]:checked){
-            & #menu-wrapper{
-                display: block;
-            }
-        }
-
-
         /* Fade for overlay */
         .fade-enter-active, .fade-leave-active {
             transition: opacity 0.3s ease;
@@ -74,7 +60,6 @@
         }
 
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     @yield("style")
 </head>
 <body class="bg-white">
@@ -102,11 +87,11 @@
                     ✕
                 </button>
                 <div class="flex flex-col gap-3">
-                    <a href="{{ route('client.index') }}" class="min-w-fit transition-colors text-2xl {{Request::is('/') ? 'nav-link-active' : ''}}">Home</a>
-                    <a href="{{ route('client.shop') }}" class="min-w-fit text-gray-600 text-2xl hover:text-black transition-colors {{Request::is('shop') ? 'nav-link-active' : ''}}">Shop</a>
-                    <a href="{{ route('client.order') }}" class="min-w-fit text-gray-600 text-2xl hover:text-black transition-colors {{Request::is('order') ? 'nav-link-active' : ''}}">Orders</a>
-                    <a href="{{ route('client.about') }}" class="min-w-fit text-gray-600 text-2xl hover:text-black transition-colors {{Request::is('about') ? 'nav-link-active' : ''}}">About Us</a>
-                    <a href="{{ route('client.contact') }}" class="min-w-fit text-gray-600 text-2xl hover:text-black transition-colors {{Request::is('contact') ? 'nav-link-active' : ''}}">Contact</a>
+                    <a href="{{ route('client.index') }}" class="min-w-fit transition-colors text-2xl {{Request::is('/') ? 'nav-link-active border-b-0' : ''}}">Home</a>
+                    <a href="{{ route('client.shop') }}" class="min-w-fit text-gray-600 text-2xl hover:text-black transition-colors {{Request::is('shop') ? 'nav-link-active border-b-0' : ''}}">Shop</a>
+                    <a href="{{ route('client.order') }}" class="min-w-fit text-gray-600 text-2xl hover:text-black transition-colors {{Request::is('order') ? 'nav-link-active border-b-0' : ''}}">Orders</a>
+                    <a href="{{ route('client.about') }}" class="min-w-fit text-gray-600 text-2xl hover:text-black transition-colors {{Request::is('about') ? 'nav-link-active border-b-0' : ''}}">About Us</a>
+                    <a href="{{ route('client.contact') }}" class="min-w-fit text-gray-600 text-2xl hover:text-black transition-colors {{Request::is('contact') ? 'nav-link-active border-b-0' : ''}}">Contact</a>
                 </div>
 
             </div>
@@ -131,8 +116,8 @@
                         {{-- Start Search Bar --}}
                         <form method="GET" action="{{route('client.shop')}}" id="search-frm">
                             <div class="relative">
-                                <input type="text" name="q" placeholder="Search products..." class="bg-gray-100 border border-gray-200 rounded-full pl-10 pr-4 py-2 w-56 focus:outline-none focus:ring-2 focus:ring-black/50"/>
-                                <svg style="transform: translateY(-5%);" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                                <input v-model="search_query" type="text" name="q" placeholder="Search products..." class="bg-gray-100 border border-gray-200 rounded-full pl-10 pr-4 py-2 w-56 focus:outline-none focus:ring-2 focus:ring-black/50"/>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                             </div>
                         </form>
                         {{-- End Search Bar --}}
@@ -149,39 +134,43 @@
                         {{-- Start Profile --}}
                         <div class="relative" id="profile-wrapper">
                             <div>
-                                <input class="hidden" type="checkbox" id="chk-menu">
+                                <input @change="onToggleProfileDropdown" class="hidden" type="checkbox" id="chk-menu">
                                 <label
                                     for="chk-menu"
                                     class="block flex items-center text-gray-600 select-none justify-center font-bold text-xl w-[50px] h-[50px] bg-[#F2F4F7] cursor-pointer rounded-full uppercase"
 
                                 >
-                                    {{substr(Auth::user()->name,1,1)}}
+                                    {{substr(Auth::user()->name,0,1)}}
                                 </label>
                             </div>
-                            <div id="menu-wrapper" class="w-[300px] bg-white shadow rounded absolute top-[110%] right-0 py-3 select-none">
-                                <h3 class="text-center text-xl font-bold">My Profile</h3>
-                                <ul class="mt-3">
-                                    <li>
-                                        <a class="block border-b py-2 px-3 text-lg flex gap-2 items-center cursor-pointer hover:bg-[#F2F4F7]">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                                            </svg>
-                                            <span>Dashboard</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <form action="{{route('client.account.process_logout')}}" method="post">
-                                            @csrf
-                                            <button type="submit" class="block w-full border-b py-2 px-3 text-lg flex gap-2 items-center cursor-pointer hover:bg-[#F2F4F7]">
+                            {{-- Start Profile Dropdown Menu --}}
+                            <transition name="fade">
+                                <div v-if="isOpenProfileDropdown" id="menu-wrapper" class="w-[270px] bg-[var(--secondary-color)] shadow-lg rounded absolute top-[110%] right-0 py-3 select-none">
+                                    <h3 class="text-center text-xl font-bold">My Profile</h3>
+                                    <ul class="mt-3">
+                                        <li>
+                                            <a class="block border-b py-2 px-3 text-lg flex gap-2 items-center cursor-pointer hover:bg-[#F2F4F7]">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15M12 9l3 3m0 0-3 3m3-3H2.25" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                                                 </svg>
-                                                <span>Sign Out</span>
-                                            </button>
-                                        </form>
-                                    </li>
-                                </ul>
-                            </div>
+                                                <span>Dashboard</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <form action="{{route('client.account.process_logout')}}" method="post">
+                                                @csrf
+                                                <button type="submit" class="block w-full border-b py-2 px-3 text-lg flex gap-2 items-center cursor-pointer hover:bg-[#F2F4F7]">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15M12 9l3 3m0 0-3 3m3-3H2.25" />
+                                                    </svg>
+                                                    <span>Sign Out</span>
+                                                </button>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </transition>
+                            {{-- End Profile Dropdown Menu --}}
                         </div>
                         {{-- End Profile --}}
                     @else
@@ -228,63 +217,54 @@
                                         class="block flex items-center text-gray-600 select-none justify-center font-bold text-xl w-[50px] h-[50px] bg-[#F2F4F7] cursor-pointer rounded-full uppercase"
 
                                     >
-                                        {{substr(Auth::user()->name,1,1)}}
+                                        {{substr(Auth::user()->name,0,1)}}
                                     </label>
                                 </div>
-                                <div id="menu-wrapper" class="w-[300px] bg-white shadow rounded absolute top-[110%] right-0 py-3 select-none">
-                                    <h3 class="text-center text-xl font-bold">My Profile</h3>
-                                    <ul class="mt-3">
-                                        <li>
-                                            <a class="block border-b py-2 px-3 text-lg flex gap-2 items-center cursor-pointer hover:bg-[#F2F4F7]">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                                                </svg>
-                                                <span>Dashboard</span>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <form action="{{route('client.account.process_logout')}}" method="post">
-                                                @csrf
-                                                <button type="submit" class="block w-full border-b py-2 px-3 text-lg flex gap-2 items-center cursor-pointer hover:bg-[#F2F4F7]">
+                                <transition name="fade">
+                                    <div v-if="isOpenProfileDropdown" id="menu-wrapper" class="w-[300px] bg-white shadow rounded absolute top-[110%] right-0 py-3 select-none">
+                                        <h3 class="text-center text-xl font-bold">My Profile</h3>
+                                        <ul class="mt-3">
+                                            <li>
+                                                <a class="block border-b py-2 px-3 text-lg flex gap-2 items-center cursor-pointer hover:bg-[#F2F4F7]">
                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15M12 9l3 3m0 0-3 3m3-3H2.25" />
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                                                     </svg>
-                                                    <span>Sign Out</span>
-                                                </button>
-                                            </form>
-                                        </li>
-                                    </ul>
-                                </div>
+                                                    <span>Dashboard</span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <form action="{{route('client.account.process_logout')}}" method="post">
+                                                    @csrf
+                                                    <button type="submit" class="block w-full border-b py-2 px-3 text-lg flex gap-2 items-center cursor-pointer hover:bg-[#F2F4F7]">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15M12 9l3 3m0 0-3 3m3-3H2.25" />
+                                                        </svg>
+                                                        <span>Sign Out</span>
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </transition>
                             </div>
                             {{-- End Profile --}}
-
+                        @else
+                            <a href="{{route('client.account.login')}}" class="min-w-fit bg-black text-white font-semibold px-4 py-2 rounded-lg text-sm">Sign In</a>
                         @endif
                     </div>
                 </template>
                 <template v-else>
+                    {{-- Start Search Bar Mobile --}}
                     <div class="w-full flex items-center relative">
-                        <input type="text" v-model="searchQuery" @input="goToShopOnSearch" placeholder="Search products..." class="w-full bg-gray-100 border-transparent focus:border-gray-300 focus:ring-0 rounded-full pl-4 pr-12 py-2">
+                        <input @keypress.enter="onSubmitMobileSearchBar()" v-model="search_query" type="text" placeholder="Search products..." class="w-full bg-gray-100 border-transparent focus:border-gray-300 focus:ring-0 rounded-full pl-4 pr-12 py-2">
                         <button @click="isSearchOpen = false" class="absolute right-2 text-gray-500 hover:text-black p-2">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                         </button>
                     </div>
+                    {{-- End Search Bar Mobile --}}
                 </template>
             </div>
         </nav>
-        <!-- Mobile Navigation Menu -->
-        <div v-show="isMenuOpen" class="lg:hidden bg-white border-t border-gray-200">
-            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                <a href="#"  class="block px-3 py-2 rounded-md text-base font-medium">Home</a>
-                <a href="#" class="block px-3 py-2 rounded-md text-base font-medium">Shop</a>
-                <a href="#"  class="block px-3 py-2 rounded-md text-base font-medium">Orders</a>
-                <a href="#"  class="block px-3 py-2 rounded-md text-base font-medium">About Us</a>
-                <a href="#"  class="block px-3 py-2 rounded-md text-base font-medium">Contact</a>
-                <div class="border-t my-2"></div>
-                <a href="#" @click.prevent="navigateTo('login'); isMenuOpen = false" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100">Login</a>
-                <a v-else href="#" @click.prevent="logout(); isMenuOpen = false" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100">Logout</a>
-            </div>
-        </div>
-
     </header>
     <main>
         @yield('content')
@@ -349,7 +329,9 @@
                 total_cart:0,
                 user_id:null,
                 isMenuOpen:false,
-                isSearchOpen:false
+                isSearchOpen:false,
+                isOpenProfileDropdown:false,
+                search_query:"",
             }
         },
         methods: {
@@ -361,6 +343,24 @@
                         this.total_cart = response.data.total
                     }
                 })
+            },
+            onToggleProfileDropdown(evt){
+                const state = evt.target.checked
+                this.isOpenProfileDropdown = state
+                if(this.isOpenProfileDropdown){
+                    document.addEventListener("click",this.onClickOutsideDropdown);
+                }
+            },
+            onClickOutsideDropdown(evt){
+                const wrapperId = evt.target.offsetParent.attributes[0].value
+                if(wrapperId !== "menu-wrapper" || evt.target.attributes[0] === "chk-menu"){
+                    if(this.isOpenProfileDropdown)
+                        this.isOpenProfileDropdown = false
+                    document.removeEventListener("click",this.onClickOutsideDropdown);
+                }
+            },
+            onSubmitMobileSearchBar(){
+                document.querySelector("#search-frm").submit();
             }
         }
     }).mount('#nav-app')

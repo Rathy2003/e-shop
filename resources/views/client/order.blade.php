@@ -1,7 +1,7 @@
 @extends('master.client-base')
 
 @section('content')
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-16" id="order-app">
         <h2 class="text-3xl font-bold text-center mb-12">Your Orders</h2>
         <div v-if="orders.length === 0" class="text-center py-16 bg-white rounded-lg shadow-md border">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -20,32 +20,62 @@
             <div v-for="order in orders" :key="order.id" class="bg-white p-6 rounded-lg shadow-md border">
                 <div class="flex flex-col sm:flex-row justify-between sm:items-center border-b pb-4 mb-4">
                     <div>
-                        <p class="font-bold text-lg">Order #001</p>
-                        <p class="text-sm text-gray-500">Placed on 23-4-2025</p>
+                        <p class="font-bold text-lg">Order #00[[order.id]]</p>
+{{--                        <p class="text-sm text-gray-500">Placed on 23-4-2025</p>--}}
+                        <p class="text-sm text-gray-500">Placed on [[order.date_time]]</p>
                     </div>
                     <div class="mt-4 sm:mt-0">
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
-                        Preparing
-                    </span>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                            Preparing
+                        </span>
                     </div>
                 </div>
                 <div class="space-y-4">
-                    <div v-for="item in order.items" class="flex items-center justify-between">
-                        <div class="flex items-center space-x-4">
-                            <img src="https://www.machines.com.my/cdn/shop/products/iPhone_15_Pink_PDP_Image_Position-1__GBEN_411a5b11-e015-40c9-a8ea-72bfea91a4c1.jpg?v=1705480793"
-                                 alt="iphone12" class="w-16 h-16 object-cover rounded-md border">
-                            <div>
-                                <p class="font-semibold">IP 16 Pro Max</p>
-                                <p class="text-sm text-gray-500">2 x 1500$</p>
+                        <div v-for="item in order.items" class="flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <img :src="item.product.image"
+                                     alt="iphone12" class="w-16 h-16 object-cover rounded-md border">
+                                <div>
+                                    <p class="font-semibold">[[item.product.name]]</p>
+                                    <p class="text-sm text-gray-500">[[item.quantity]] x [[item.price]]$</p>
+                                </div>
                             </div>
+                            <p class="font-semibold">[[item.price * item.quantity]]$</p>
                         </div>
-                        <p class="font-semibold">3000$</p>
-                    </div>
                 </div>
                 <div class="text-right font-bold text-lg mt-4 pt-4 border-t">
-                    Total: 3000$
+                    Total: [[order.total]]$
                 </div>
             </div>
         </div>
     </div>
+@endsection
+
+@section("script")
+    <script>
+        const { createApp } = Vue
+        createApp({
+            delimiters: ['[[', ']]'],
+            created(){
+                if({{Auth::check() ? 1 : 0 }} != 0)
+                    this.fetchOrders();
+            },
+
+            data() {
+                return {
+                    user_id:"{{Auth::check() ? Auth::user()->id : null}}",
+                    orders:[]
+                }
+            },
+            methods: {
+                fetchOrders(){
+                    axios.post("{{route('client.orders.get-all-orders')}}",{user_id:this.user_id}).then((response) => {
+                        if (response.data.length > 0) {
+                            this.orders = response.data;
+                        }
+                    })
+                }
+            }
+        }).mount('#order-app')
+    </script>
 @endsection

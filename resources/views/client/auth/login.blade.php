@@ -1,9 +1,10 @@
 @extends('master.client-base')
 
 @section('content')
-    <div class="bg-gray-50 py-16">
-        <div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md border">
-            <h2 class="text-3xl font-bold text-center mb-6">Login</h2>
+    <div class="bg-gray-50 py-16 px-4">
+        <div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md border  min-h-[460px]">
+            <h2 class="text-3xl font-bold text-center mb-6">Sign In</h2>
+            <p class="text-gray-600 text-center">Welcome back—your cart, favorites, and exclusive offers await.</p>
             <form method="post" action="{{route('client.account.process_login')}}">
                 @csrf
                 <div class="space-y-4">

@@ -4,6 +4,9 @@
     <div class="bg-gray-50 py-16">
         <div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md border">
             <h2 class="text-3xl font-bold text-center mb-6">Create Account</h2>
+            <p class="text-center text-gray-600 mb-5">
+                Join now to save your favorites, unlock deals, and shop your way.
+            </p>
             <form method="post" action="{{route('client.account.process_register')}}">
                 @csrf
 

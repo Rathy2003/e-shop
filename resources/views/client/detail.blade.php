@@ -14,12 +14,21 @@
             cursor: pointer;
             color: #fff;
             transition: .3s ease-in-out;
+            font-size: 15px;
             overflow: hidden;
         }
-        .cart-button:hover {
+
+        .cart-button:disabled{
+            opacity: 0.8;
+            cursor: not-allowed;
+            user-select: none;
+        }
+
+        .cart-button:not(:disabled):hover {
             opacity: 0.8;
         }
-        .cart-button:active {
+
+        .cart-button:not(:disabled):active {
             transform: scale(.9);
         }
 
@@ -107,14 +116,47 @@
                 opacity: 1;
             }
         }
+
+        .cart-container {
+            position: relative;
+        }
+
+        .plus-one {
+            position: absolute;
+            top: -10px;
+            right: 5px;
+            background: black;
+            color: white;
+            font-size: 14px;
+            padding: 4px 6px;
+            border-radius: 50%;
+            opacity: 0;
+            transform: translateY(0);
+            pointer-events: none;
+        }
+
+        .cart-container.added .plus-one {
+            animation: floatUp 0.8s ease forwards;
+        }
+
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+        }
+
     </style>
 @endsection
 
 @section('content')
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-16" id="detail-product-app">
-
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8" id="detail-product-app">
         {{-- Start Login Required Dialog --}}
-        <dialog class="m-auto p-8 rounded max-w-[500px]" id="login-required-dialog">
+        <dialog class="m-auto mx-5 sm:mx-auto p-8 rounded max-w-[500px]" id="login-required-dialog">
             <button @click="closeModal()" type="button" class="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center">
                 <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
@@ -137,6 +179,17 @@
         </dialog>
         {{-- End Login Required Dialog --}}
 
+        {{-- Start Back To Shop Button (Mobile) --}}
+        <a href="{{route('client.shop')}}" class="flex md:hidden text-sm text-gray-500 hover:text-black mb-4 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                 class="w-4 h-4 mr-2">
+                <path d="m15 18-6-6 6-6"/>
+            </svg>
+            Back to Shop
+        </a>
+        {{-- End Back To Shop Button (Mobile) --}}
+
         <div class="grid md:grid-cols-2 gap-8 lg:gap-16">
             <!-- Product Image Gallery -->
             <div>
@@ -155,7 +208,7 @@
             </div>
             <!-- Product Details -->
             <div>
-                <a href="{{route('client.shop')}}" class="text-sm text-gray-500 hover:text-black mb-4 flex items-center">
+                <a href="{{route('client.shop')}}" class="hidden md:flex text-sm text-gray-500 hover:text-black mb-4 flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                          class="w-4 h-4 mr-2">
@@ -163,14 +216,43 @@
                     </svg>
                     Back to Shop
                 </a>
-                <h2 class="text-4xl font-extrabold text-black">{{ $product->name }}</h2>
+                <h2 class="text-xl md:text-4xl font-extrabold text-black">{{ $product->name }}</h2>
 
                 {{-- Start Category and Discount Badge --}}
-                <div class="flex gap-3 mt-5">
-                    <p class="text-white bg-black px-3 py-1 rounded">{{ $product->category->name }}</p>
-                    @if($product->discount > 0)
-                        <p class="text-white bg-red-500 px-3 py-1 rounded">-{{ $product->discount }}%</p>
-                    @endif
+                <div class="flex gap-3 mt-3 items-center max-md:justify-between">
+                   <div class="flex items-center gap-3">
+                       <div class="text-white flex items-center justify-center max-md:text-sm bg-black px-3 py-[5px] rounded">{{ $product->category->name }}</div>
+                       @if($product->discount > 0)
+                           <div class="text-white flex items-center max-md:text-sm justify-center bg-red-500 px-3 py-[5px] rounded">-{{ $product->discount }}%</div>
+                       @endif
+                   </div>
+
+                    <div class="hidden max-md:flex gap-3 ">
+                        {{-- Start Quantity --}}
+                        <div class="flex items-center border rounded-md">
+                            <button @click="decreaseQuantity()" class="w-10 h-10 text-xl font-bold hover:bg-gray-100 rounded-l-md">-</button>
+                            <span class="w-12 text-center text-lg font-semibold">[[quantity]]</span>
+                            <button @click="increaseQuantity()" class="w-10 h-10 text-xl font-bold hover:bg-gray-100 rounded-r-md">+</button>
+                        </div>
+                        {{-- End Quantity --}}
+
+                        {{-- Start Add To Cart Button (Mobile) --}}
+                        @if(!Auth::check())
+                            <button @click="openModal()" class="text-sm px-4 text-white py-3 bg-black rounded cursor-pointer hover:bg-black/50">
+                                <i class="fa-solid fa-cart-plus"></i>
+                            </button>
+                        @else
+                            <div class="cart-container" :class="{'added':is_adding}" id="cart">
+                                <div class="plus-one">+[[quantity]]</div>
+                                <button @click="addToCart()" class="text-sm px-4 text-white py-3 bg-black rounded cursor-pointer hover:bg-black/50" :disabled="is_adding">
+                                    <i class="fa-solid fa-cart-plus"></i>
+                                </button>
+                            </div>
+
+                        @endif
+
+                        {{-- End Add To Cart Button (Mobile) --}}
+                    </div>
                 </div>
                 {{-- End Category and Discount Badge --}}
 
@@ -183,21 +265,17 @@
                 @endphp
 
                 @if($product->discount > 0)
-                    <div class="flex gap-2 items-end mt-5">
-                        <p class="mt-2 font-bold text-black text-2xl">${{number_format($product->price - $discountPrice,2)}}</p>
-                        <del class="mt-2 text-[15px] font-bold pb-[2px] text-black">${{number_format($product->price,2)}}</del>
+                    <div class="flex gap-2 items-end mt-2">
+                        <p class="mt-2 font-bold text-black text-xl md:text-2xl">${{number_format($product->price - $discountPrice,2)}}</p>
+                        <del class="mt-2 text-[12px] md:text-[15px] font-bold pb-[2px] text-black">${{number_format($product->price,2)}}</del>
                     </div>
                 @else
                     <p class="mt-5 font-bold text-black">${{$product->price}}</p>
                 @endif
                 {{-- End Product Price --}}
 
-                {{-- Start Product Description --}}
-                <p class="text-gray-700 leading-relaxed mt-5">{{ $product->description }}</p>
-                {{-- End Product Description --}}
-
-
-                <div class="mt-8 flex items-center space-x-4">
+                {{-- Start To Cart (Desktop) --}}
+                <div class="mt-5 hidden md:flex items-center space-x-4">
                     {{-- Start Quantity --}}
                     <div class="flex items-center border rounded-md">
                         <button @click="decreaseQuantity()" class="w-10 h-10 text-xl font-bold hover:bg-gray-100 rounded-l-md">-</button>
@@ -212,10 +290,10 @@
                             Add to Cart
                         </button>
                     @else
-{{--                        <button @click="addToCart()" class="flex-1 bg-black text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-gray-800 transition-all">--}}
-{{--                            Add to Cart--}}
-{{--                        </button>--}}
-                        <button @click="addToCart()" class="cart-button" id="cart-button">
+                        {{--                        <button @click="addToCart()" class="flex-1 bg-black text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-gray-800 transition-all">--}}
+                        {{--                            Add to Cart--}}
+                        {{--                        </button>--}}
+                        <button @click="addToCart()" class="cart-button" :class="{'clicked': is_adding}" :disabled="is_adding" id="cart-button">
                             <span class="add-to-cart">Add to cart</span>
                             <span class="added">Added</span>
                             <i class="fas fa-shopping-cart"></i>
@@ -223,8 +301,11 @@
                         </button>
                     @endif
                 </div>
+                {{-- End Add To Cart (Desktop) --}}
 
-                {{-- End Add To Cart --}}
+                {{-- Start Product Description --}}
+                <p class="text-gray-700 leading-relaxed mt-5 text-sm md:text-lg">{{ $product->description }}</p>
+                {{-- End Product Description --}}
             </div>
         </div>
     </div>
@@ -245,11 +326,12 @@
                     user_id: @json(Auth::check() ? Auth::user()->id : null),
                     product_id: null,
                     quantity: 1,
+                    is_adding:false,
                 }
             },
             methods: {
                 addToCart(){
-                    document.querySelector("#cart-button").classList.add("clicked");
+                    this.is_adding = true;
                     let data = {
                         user_id: this.user_id,
                         quantity: this.quantity,
@@ -260,9 +342,9 @@
                             if (window.NavApp) {
                                 window.NavApp.fetchTotalCart();
                                 setTimeout(()=>{
-                                    document.querySelector("#cart-button").classList.remove("clicked");
+                                    this.is_adding = false;
                                     this.quantity = 1;
-                                },3000)
+                                },2000)
                             }
                         }
                     })
