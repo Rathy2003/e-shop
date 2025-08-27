@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KHMART | Modern Fashion</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Vue.js CDN -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide-vue-next"></script>
+
+    <style>
+        /* Custom styles to complement Tailwind */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background-color: #ffffff; /* White background */
+        }
+        /* Simple transition for page changes */
+        .fade-enter-active, .fade-leave-active {
+            transition: opacity 0.3s ease;
+        }
+        .fade-enter-from, .fade-leave-to {
+            opacity: 0;
+        }
+        /* Style for the active navigation link */
+        .nav-link-active {
+            color: #000000; /* Black */
+            font-weight: 700; /* Bolder */
+            border-bottom: 2px solid #000000; /* Black underline */
+        }
+        .thumbnail-active {
+            outline: 2px solid #000000;
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body class="bg-white">
+
+    <div id="app" class="text-black">
+
+        <!-- Header Section -->
+        <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-40 border-b border-gray-200">
+            <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- Desktop Header -->
+                <div class="hidden lg:flex items-center justify-between h-16">
+                    <a href="#" @click.prevent="navigateTo('home')" class="flex-shrink-0 flex items-center space-x-2">
+                        <svg class="h-8 w-8 text-black" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                        <span class="text-2xl font-bold text-black">KHMART</span>
+                    </a>
+                    <div class="flex items-center space-x-8 mx-auto">
+                        <a href="#" @click.prevent="navigateTo('home')" class="text-gray-600 hover:text-black transition-colors py-3" :class="{ 'nav-link-active': currentPage === 'home' }">Home</a>
+                        <a href="#" @click.prevent="navigateTo('shop')" class="text-gray-600 hover:text-black transition-colors py-3" :class="{ 'nav-link-active': currentPage === 'shop' || currentPage === 'productDetail' }">Shop</a>
+                        <a href="#" @click.prevent="navigateTo('orders')" class="text-gray-600 hover:text-black transition-colors py-3" :class="{ 'nav-link-active': currentPage === 'orders' }">Orders</a>
+                        <a href="#" @click.prevent="navigateTo('about')" class="text-gray-600 hover:text-black transition-colors py-3" :class="{ 'nav-link-active': currentPage === 'about' }">About Us</a>
+                        <a href="#" @click.prevent="navigateTo('contact')" class="text-gray-600 hover:text-black transition-colors py-3" :class="{ 'nav-link-active': currentPage === 'contact' }">Contact</a>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <input type="text" v-model="searchQuery" @input="goToShopOnSearch" placeholder="Search products..." class="bg-gray-100 border border-gray-200 rounded-full pl-10 pr-4 py-2 w-56 focus:outline-none focus:ring-2 focus:ring-black/50">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        </div>
+                        <a href="#" @click.prevent="navigateTo('checkout')" class="relative text-gray-500 hover:text-black transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                            <span v-if="cartItemCount > 0" class="absolute -top-2 -right-2 bg-black text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">{{ cartItemCount }}</span>
+                        </a>
+                        <button v-if="!currentUser" @click="navigateTo('login')" class="bg-black text-white font-semibold px-4 py-2 rounded-lg text-sm">Login</button>
+                        <button v-else @click="logout" class="bg-gray-200 text-black font-semibold px-4 py-2 rounded-lg text-sm">Logout</button>
+                    </div>
+                </div>
+
+                <!-- Mobile Header -->
+                <div class="lg:hidden flex items-center h-16" :class="isSearchOpen ? 'justify-center' : 'justify-between'">
+                    <template v-if="!isSearchOpen">
+                        <a href="#" @click.prevent="navigateTo('home')" class="flex-shrink-0 flex items-center space-x-2">
+                           <svg class="h-8 w-8 text-black" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                           <span class="text-2xl font-bold text-black">KHMART</span>
+                        </a>
+                        <div class="flex items-center space-x-4">
+                            <button @click="isSearchOpen = true; isMenuOpen = false" class="text-gray-500 hover:text-black">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            </button>
+                            <a href="#" @click.prevent="navigateTo('checkout')" class="relative text-gray-500 hover:text-black transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                                <span v-if="cartItemCount > 0" class="absolute -top-2 -right-2 bg-black text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">{{ cartItemCount }}</span>
+                            </a>
+                            <button @click="isMenuOpen = !isMenuOpen; isSearchOpen = false" class="text-gray-500 hover:text-black">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                            </button>
+                        </div>
+                    </template>
+                    <template v-else>
+                        <div class="w-full flex items-center relative">
+                            <input type="text" v-model="searchQuery" @input="goToShopOnSearch" placeholder="Search products..." class="w-full bg-gray-100 border-transparent focus:border-gray-300 focus:ring-0 rounded-full pl-4 pr-12 py-2">
+                            <button @click="isSearchOpen = false" class="absolute right-2 text-gray-500 hover:text-black p-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            </button>
+                        </div>
+                    </template>
+                </div>
+            </nav>
+            <!-- Mobile Navigation Menu -->
+            <div v-show="isMenuOpen" class="lg:hidden bg-white border-t border-gray-200">
+                <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                    <a href="#" @click.prevent="navigateTo('home'); isMenuOpen = false" class="block px-3 py-2 rounded-md text-base font-medium" :class="currentPage === 'home' ? 'text-white bg-black' : 'text-gray-700 hover:bg-gray-100'">Home</a>
+                    <a href="#" @click.prevent="navigateTo('shop'); isMenuOpen = false" class="block px-3 py-2 rounded-md text-base font-medium" :class="currentPage === 'shop' || currentPage === 'productDetail' ? 'text-white bg-black' : 'text-gray-700 hover:bg-gray-100'">Shop</a>
+                    <a href="#" @click.prevent="navigateTo('orders'); isMenuOpen = false" class="block px-3 py-2 rounded-md text-base font-medium" :class="currentPage === 'orders' ? 'text-white bg-black' : 'text-gray-700 hover:bg-gray-100'">Orders</a>
+                    <a href="#" @click.prevent="navigateTo('about'); isMenuOpen = false" class="block px-3 py-2 rounded-md text-base font-medium" :class="currentPage === 'about' ? 'text-white bg-black' : 'text-gray-700 hover:bg-gray-100'">About Us</a>
+                    <a href="#" @click.prevent="navigateTo('contact'); isMenuOpen = false" class="block px-3 py-2 rounded-md text-base font-medium" :class="currentPage === 'contact' ? 'text-white bg-black' : 'text-gray-700 hover:bg-gray-100'">Contact</a>
+                     <div class="border-t my-2"></div>
+                    <a v-if="!currentUser" href="#" @click.prevent="navigateTo('login'); isMenuOpen = false" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100">Login</a>
+                    <a v-else href="#" @click.prevent="logout(); isMenuOpen = false" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100">Logout</a>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <transition name="fade" mode="out-in">
+                <!-- Login Page -->
+                <div v-if="currentPage === 'login'" key="login" class="bg-gray-50 py-16">
+                    <div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md border">
+                        <h2 class="text-3xl font-bold text-center mb-6">Login</h2>
+                        <form @submit.prevent="handleLogin">
+                            <div class="space-y-4">
+                                <div>
+                                    <label for="login-email" class="block text-sm font-medium text-gray-700">Email</label>
+                                    <input type="email" v-model="loginForm.email" id="login-email" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black" required>
+                                </div>
+                                <div>
+                                    <label for="login-password" class="block text-sm font-medium text-gray-700">Password</label>
+                                    <input type="password" v-model="loginForm.password" id="login-password" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black" required>
+                                </div>
+                                <p v-if="authError" class="text-red-500 text-sm">{{ authError }}</p>
+                                <button type="submit" class="w-full bg-black text-white font-semibold px-4 py-3 rounded-lg shadow-md hover:bg-gray-800 transition-all">Sign In</button>
+                            </div>
+                        </form>
+                        <p class="text-center mt-4 text-sm text-gray-600">
+                            Don't have an account? <a href="#" @click.prevent="navigateTo('signup')" class="font-medium text-black hover:underline">Sign up</a>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Sign Up Page -->
+                <div v-if="currentPage === 'signup'" key="signup" class="bg-gray-50 py-16">
+                    <div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md border">
+                        <h2 class="text-3xl font-bold text-center mb-6">Create Account</h2>
+                        <form @submit.prevent="handleSignup">
+                            <div class="space-y-4">
+                                <div>
+                                    <label for="signup-email" class="block text-sm font-medium text-gray-700">Email</label>
+                                    <input type="email" v-model="signupForm.email" id="signup-email" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black" required>
+                                </div>
+                                <div>
+                                    <label for="signup-password" class="block text-sm font-medium text-gray-700">Password</label>
+                                    <input type="password" v-model="signupForm.password" id="signup-password" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black" required>
+                                </div>
+                                <p v-if="authError" class="text-red-500 text-sm">{{ authError }}</p>
+                                <button type="submit" class="w-full bg-black text-white font-semibold px-4 py-3 rounded-lg shadow-md hover:bg-gray-800 transition-all">Sign Up</button>
+                            </div>
+                        </form>
+                        <p class="text-center mt-4 text-sm text-gray-600">
+                            Already have an account? <a href="#" @click.prevent="navigateTo('login')" class="font-medium text-black hover:underline">Log in</a>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Home Page -->
+                <div v-if="currentPage === 'home'" key="home">
+                    <!-- Hero Section -->
+                    <section class="bg-white">
+                        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+                            <div class="grid md:grid-cols-2 gap-8 items-center">
+                                <div class="text-center md:text-left">
+                                    <h1 class="text-4xl md:text-6xl font-extrabold text-black leading-tight">
+                                        Find Your<br>Perfect Style
+                                    </h1>
+                                    <p class="mt-4 text-lg text-gray-600 max-w-lg mx-auto md:mx-0">
+                                        Discover our new collection of premium shoes, clothes, and bags. Unmatched quality and timeless design.
+                                    </p>
+                                    <div class="mt-8 flex justify-center md:justify-start space-x-4">
+                                        <a href="#" @click.prevent="navigateTo('shop')" class="bg-black text-white font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-gray-800 transition-all">Shop Now</a>
+                                        <a href="#" @click.prevent="navigateTo('about')" class="bg-gray-200 text-black font-semibold px-8 py-3 rounded-lg hover:bg-gray-300 transition-all">Learn More</a>
+                                    </div>
+                                </div>
+                                <div class="relative">
+                                    <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2070&auto=format&fit=crop" alt="Featured Outfit" class="rounded-lg shadow-2xl w-full h-full object-cover">
+                                    <div class="absolute -bottom-4 -right-4 bg-white p-4 rounded-lg shadow-lg hidden md:block border">
+                                        <p class="font-bold">New Summer Collection</p>
+                                        <p class="text-sm text-gray-500">Just Arrived</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Discount Banner -->
+                    <section class="bg-black text-white">
+                        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col md:flex-row items-center justify-between">
+                            <h3 class="text-2xl font-bold text-center md:text-left">Enjoy <span class="text-gray-300">20% OFF</span> Your First Order</h3>
+                            <a href="#" @click.prevent="navigateTo('shop')" class="mt-4 md:mt-0 bg-white text-black font-bold px-6 py-2 rounded-full hover:bg-gray-200 transition-colors">Claim Offer</a>
+                        </div>
+                    </section>
+
+                    <!-- Featured Products -->
+                    <section class="py-16 sm:py-24 bg-gray-50">
+                        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                            <h2 class="text-3xl font-bold text-center mb-12">Trending Products</h2>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                                <div v-for="product in featuredProducts" :key="product.id" @click="viewProduct(product)" class="bg-white rounded-lg shadow-md overflow-hidden group transition-transform duration-300 hover:-translate-y-2 border cursor-pointer">
+                                    <div class="relative overflow-hidden">
+                                        <img :src="product.imageUrl" :alt="product.name" class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300">
+                                    </div>
+                                    <div class="p-4">
+                                        <h3 class="font-semibold text-lg">{{ product.name }}</h3>
+                                        <p class="text-gray-500 text-sm">{{ product.category }}</p>
+                                        <p class="mt-2 font-bold text-black">{{ formatPrice(product.price) }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Shop Page -->
+                <div v-if="currentPage === 'shop'" key="shop" class="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                    <h2 class="text-3xl font-bold text-center mb-4">Our Collection</h2>
+                    <p class="text-center text-gray-600 mb-12">Browse our curated selection of high-quality fashion items.</p>
+
+                    <!-- Category Filters -->
+                    <div class="flex justify-center space-x-2 sm:space-x-4 mb-12">
+                        <button @click="activeCategory = 'All'" :class="{'bg-black text-white': activeCategory === 'All', 'bg-white text-black border': activeCategory !== 'All'}" class="px-4 py-2 rounded-full font-semibold shadow-sm hover:bg-gray-800 hover:text-white transition-colors">All</button>
+                        <button @click="activeCategory = 'Shoes'" :class="{'bg-black text-white': activeCategory === 'Shoes', 'bg-white text-black border': activeCategory !== 'Shoes'}" class="px-4 py-2 rounded-full font-semibold shadow-sm hover:bg-gray-800 hover:text-white transition-colors">Shoes</button>
+                        <button @click="activeCategory = 'Clothes'" :class="{'bg-black text-white': activeCategory === 'Clothes', 'bg-white text-black border': activeCategory !== 'Clothes'}" class="px-4 py-2 rounded-full font-semibold shadow-sm hover:bg-gray-800 hover:text-white transition-colors">Clothes</button>
+                        <button @click="activeCategory = 'Bags'" :class="{'bg-black text-white': activeCategory === 'Bags', 'bg-white text-black border': activeCategory !== 'Bags'}" class="px-4 py-2 rounded-full font-semibold shadow-sm hover:bg-gray-800 hover:text-white transition-colors">Bags</button>
+                    </div>
+
+                    <!-- Products Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                         <div v-for="product in shopProducts" :key="product.id" @click="viewProduct(product)" class="bg-white rounded-lg shadow-md overflow-hidden group transition-transform duration-300 hover:-translate-y-2 border cursor-pointer">
+                            <div class="relative overflow-hidden">
+                                <img :src="product.imageUrl" :alt="product.name" class="w-full h-72 object-cover group-hover:scale-105 transition-transform duration-300">
+                            </div>
+                            <div class="p-4">
+                                <h3 class="font-semibold text-lg">{{ product.name }}</h3>
+                                <p class="text-gray-500 text-sm">{{ product.category }}</p>
+                                <p class="mt-2 font-bold text-black">{{ formatPrice(product.price) }}</p>
+                            </div>
+                        </div>
+                    </div>
+                     <div v-if="shopProducts.length === 0" class="text-center col-span-full py-16">
+                        <h3 class="text-xl font-semibold">No Products Found</h3>
+                        <p class="text-gray-500 text-lg mt-2">Try adjusting your search or category filters.</p>
+                    </div>
+                </div>
+
+                <!-- Product Detail Page -->
+                <div v-if="currentPage === 'productDetail' && selectedProduct" key="detail" class="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                    <div class="grid md:grid-cols-2 gap-8 lg:gap-16">
+                        <!-- Product Image Gallery -->
+                        <div>
+                            <div class="bg-gray-100 rounded-lg flex items-center justify-center p-4 mb-4 h-96">
+                                <img :src="activeImageUrl" :alt="selectedProduct.name" class="max-w-full max-h-full object-contain rounded-lg">
+                            </div>
+                            <div class="grid grid-cols-5 gap-2">
+                                <div v-for="(image, index) in selectedProduct.imageUrls" :key="index" @click="setActiveImage(index)" class="bg-gray-100 rounded-md flex items-center justify-center p-1 cursor-pointer" :class="{ 'thumbnail-active': index === activeImageIndex }">
+                                    <img :src="image" :alt="`${selectedProduct.name} thumbnail ${index + 1}`" class="w-full h-20 object-cover rounded-md">
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Product Details -->
+                        <div>
+                            <button @click="navigateTo('shop')" class="text-sm text-gray-500 hover:text-black mb-4 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 mr-2"><path d="m15 18-6-6 6-6"/></svg>
+                                Back to Shop
+                            </button>
+                            <h2 class="text-4xl font-extrabold text-black">{{ selectedProduct.name }}</h2>
+                            <p class="text-gray-500 mt-2">{{ selectedProduct.category }}</p>
+                            <p class="text-3xl font-bold my-4">{{ formatPrice(selectedProduct.price) }}</p>
+                            <p class="text-gray-700 leading-relaxed">{{ selectedProduct.description }}</p>
+
+                            <div class="mt-8 flex items-center space-x-4">
+                                <div class="flex items-center border rounded-md">
+                                    <button @click="detailQuantity > 1 ? detailQuantity-- : null" class="w-10 h-10 text-xl font-bold hover:bg-gray-100 rounded-l-md">-</button>
+                                    <span class="w-12 text-center text-lg font-semibold">{{ detailQuantity }}</span>
+                                    <button @click="detailQuantity++" class="w-10 h-10 text-xl font-bold hover:bg-gray-100 rounded-r-md">+</button>
+                                </div>
+                                <button @click="addToCart(selectedProduct, detailQuantity)" class="flex-1 bg-black text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-gray-800 transition-all">
+                                    Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Orders Page -->
+                <div v-if="currentPage === 'orders'" key="orders" class="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                    <h2 class="text-3xl font-bold text-center mb-12">Your Orders</h2>
+                    <div v-if="orders.length === 0" class="text-center py-16 bg-white rounded-lg shadow-md border">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-16 h-16 mx-auto text-gray-300"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                        <h3 class="mt-4 text-xl font-semibold text-black">No orders yet</h3>
+                        <p class="mt-2 text-gray-500">You haven't placed any orders with us. Let's change that!</p>
+                        <button @click="navigateTo('shop')" class="mt-6 bg-black text-white font-semibold px-6 py-2 rounded-lg shadow-md hover:bg-gray-800 transition-all">Start Shopping</button>
+                    </div>
+                    <div v-else class="space-y-8">
+                        <div v-for="order in orders" :key="order.id" class="bg-white p-6 rounded-lg shadow-md border">
+                            <div class="flex flex-col sm:flex-row justify-between sm:items-center border-b pb-4 mb-4">
+                                <div>
+                                    <p class="font-bold text-lg">Order #{{ order.id }}</p>
+                                    <p class="text-sm text-gray-500">Placed on {{ order.date }}</p>
+                                </div>
+                                <div class="mt-4 sm:mt-0">
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                                        {{ order.status }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="space-y-4">
+                                <div v-for="item in order.items" :key="item.id" class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-4">
+                                        <img :src="item.imageUrl" :alt="item.name" class="w-16 h-16 object-cover rounded-md border">
+                                        <div>
+                                            <p class="font-semibold">{{ item.name }}</p>
+                                            <p class="text-sm text-gray-500">{{ item.quantity }} x {{ formatPrice(item.price) }}</p>
+                                        </div>
+                                    </div>
+                                    <p class="font-semibold">{{ formatPrice(item.price * item.quantity) }}</p>
+                                </div>
+                            </div>
+                            <div class="text-right font-bold text-lg mt-4 pt-4 border-t">
+                                Total: {{ formatPrice(order.total) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- About Us Page -->
+                <div v-if="currentPage === 'about'" key="about" class="bg-gray-50">
+                    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                        <div class="max-w-3xl mx-auto text-center">
+                            <h2 class="text-4xl font-extrabold text-black">About KHMART</h2>
+                            <p class="mt-4 text-lg text-gray-600">We believe that fashion is more than just clothing; it's a form of self-expression. Founded in 2024, KHMART was born from a desire to bring timeless, high-quality fashion to everyone.</p>
+                        </div>
+                        <div class="mt-16 grid md:grid-cols-2 gap-16 items-center">
+                            <div>
+                                <h3 class="text-2xl font-bold text-black">Our Mission</h3>
+                                <p class="mt-4 text-gray-600">Our mission is to empower individuals to feel confident and stylish through our thoughtfully curated collections. We focus on sustainable materials, ethical production, and designs that last beyond the season.</p>
+                                <h3 class="mt-8 text-2xl font-bold text-black">Our Values</h3>
+                                <ul class="mt-4 space-y-2 text-gray-600 list-disc list-inside">
+                                    <li><strong>Quality First:</strong> We never compromise on the quality of our materials and craftsmanship.</li>
+                                    <li><strong>Customer-Centric:</strong> Your satisfaction is our top priority. We're here to help you find your perfect style.</li>
+                                    <li><strong>Sustainability:</strong> We are committed to reducing our environmental footprint and promoting ethical practices.</li>
+                                </ul>
+                            </div>
+                            <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2070&auto=format&fit=crop" alt="Our creative workspace" class="rounded-lg shadow-xl w-full">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Us Page -->
+                <div v-if="currentPage === 'contact'" key="contact" class="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                    <div class="max-w-lg mx-auto text-center">
+                        <h2 class="text-4xl font-extrabold text-black">Get In Touch</h2>
+                        <p class="mt-4 text-lg text-gray-600">Have a question or feedback? We'd love to hear from you. Reach out to us through any of the methods below.</p>
+                    </div>
+                    <div class="mt-16 grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                        <div class="bg-white p-8 rounded-lg shadow-md border">
+                            <h3 class="text-2xl font-bold mb-4">Contact Form</h3>
+                            <form @submit.prevent="submitForm">
+                                <div class="space-y-4">
+                                    <div>
+                                        <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+                                        <input type="text" id="name" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black">
+                                    </div>
+                                    <div>
+                                        <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                                        <input type="email" id="email" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black">
+                                    </div>
+                                    <div>
+                                        <label for="message" class="block text-sm font-medium text-gray-700">Message</label>
+                                        <textarea id="message" rows="4" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black"></textarea>
+                                    </div>
+                                    <button type="submit" class="w-full bg-black text-white font-semibold px-4 py-3 rounded-lg shadow-md hover:bg-gray-800 transition-all">Send Message</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="bg-white p-8 rounded-lg shadow-md border flex flex-col justify-center">
+                            <h3 class="text-2xl font-bold mb-4">Our Information</h3>
+                            <div class="space-y-4 text-gray-700">
+                                <p class="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 mr-3 text-black flex-shrink-0"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg><span>123 Fashion Ave, Style City, 10101</span></p>
+                                <p class="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 mr-3 text-black flex-shrink-0"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span>(555) 123-4567</span></p>
+                                <p class="flex items-start"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 mr-3 text-black flex-shrink-0"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span>hello@khmart.com</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Checkout Page -->
+                <div v-if="currentPage === 'checkout'" key="checkout" class="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                    <h2 class="text-3xl font-bold text-center mb-12">Checkout</h2>
+                    <div v-if="cart.length === 0" class="text-center py-16 bg-white rounded-lg shadow-md border">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-16 h-16 mx-auto text-gray-300"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                        <h3 class="mt-4 text-xl font-semibold text-black">Your cart is empty</h3>
+                        <p class="mt-2 text-gray-500">Looks like you haven't added anything to your cart yet.</p>
+                        <button @click="navigateTo('shop')" class="mt-6 bg-black text-white font-semibold px-6 py-2 rounded-lg shadow-md hover:bg-gray-800 transition-all">Start Shopping</button>
+                    </div>
+
+                    <div v-else class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <!-- Left Column: Cart & Payment -->
+                        <div class="lg:col-span-2 space-y-8">
+                            <!-- Cart Items -->
+                            <div class="bg-white p-6 rounded-lg shadow-md border">
+                                <h3 class="text-xl font-semibold border-b pb-4 mb-4">Your Items ({{ cartItemCount }})</h3>
+                                <div v-for="item in cart" :key="item.id" class="flex items-center justify-between py-4 border-b last:border-b-0">
+                                    <div class="flex items-center space-x-4">
+                                        <img :src="item.imageUrl" :alt="item.name" class="w-20 h-20 object-cover rounded-md border">
+                                        <div>
+                                            <p class="font-semibold">{{ item.name }}</p>
+                                            <p class="text-sm text-gray-500">{{ formatPrice(item.price) }}</p>
+                                            <button @click="removeFromCart(item.id)" class="text-xs text-red-500 hover:underline mt-1">Remove</button>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-3">
+                                        <button @click="decrementQuantity(item.id)" class="w-7 h-7 rounded-full border hover:bg-gray-100">-</button>
+                                        <span>{{ item.quantity }}</span>
+                                        <button @click="incrementQuantity(item.id)" class="w-7 h-7 rounded-full border hover:bg-gray-100">+</button>
+                                    </div>
+                                    <p class="font-semibold w-20 text-right">{{ formatPrice(item.price * item.quantity) }}</p>
+                                </div>
+                            </div>
+
+                            <!-- Payment Method -->
+                            <div class="bg-white p-6 rounded-lg shadow-md border">
+                                <h3 class="text-xl font-semibold mb-4">Payment Method</h3>
+                                <div class="space-y-4">
+                                    <!-- Credit Card -->
+                                    <label class="flex items-center p-4 border rounded-lg cursor-pointer transition-all" :class="{ 'bg-gray-100 border-black': selectedPaymentMethod === 'creditCard' }">
+                                        <input type="radio" v-model="selectedPaymentMethod" value="creditCard" class="h-4 w-4 text-black focus:ring-black">
+                                        <span class="ml-3 font-semibold">Credit Card</span>
+                                    </label>
+                                    <div v-if="selectedPaymentMethod === 'creditCard'" class="p-4 space-y-4 border-t">
+                                        <div>
+                                            <label for="cardNumber" class="block text-sm font-medium text-gray-700">Card Number</label>
+                                            <input type="text" id="cardNumber" placeholder="•••• •••• •••• ••••" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black">
+                                        </div>
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label for="expiryDate" class="block text-sm font-medium text-gray-700">Expiry Date</label>
+                                                <input type="text" id="expiryDate" placeholder="MM / YY" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black">
+                                            </div>
+                                            <div>
+                                                <label for="cvc" class="block text-sm font-medium text-gray-700">CVC</label>
+                                                <input type="text" id="cvc" placeholder="•••" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- PayPal -->
+                                     <label class="flex items-center p-4 border rounded-lg cursor-pointer transition-all" :class="{ 'bg-gray-100 border-black': selectedPaymentMethod === 'paypal' }">
+                                        <input type="radio" v-model="selectedPaymentMethod" value="paypal" class="h-4 w-4 text-black focus:ring-black">
+                                        <span class="ml-3 font-semibold">PayPal</span>
+                                    </label>
+                                    <!-- Cash on Delivery -->
+                                     <label class="flex items-center p-4 border rounded-lg cursor-pointer transition-all" :class="{ 'bg-gray-100 border-black': selectedPaymentMethod === 'cod' }">
+                                        <input type="radio" v-model="selectedPaymentMethod" value="cod" class="h-4 w-4 text-black focus:ring-black">
+                                        <span class="ml-3 font-semibold">Cash on Delivery</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Order Summary -->
+                        <div class="lg:col-span-1">
+                            <div class="bg-white p-6 rounded-lg shadow-md border h-fit sticky top-24">
+                                <h3 class="text-xl font-semibold border-b pb-4 mb-4">Order Summary</h3>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between">
+                                        <p>Subtotal</p>
+                                        <p>{{ formatPrice(cartTotal) }}</p>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <p>Shipping</p>
+                                        <p>Free</p>
+                                    </div>
+                                    <div class="flex justify-between font-bold text-lg border-t pt-4 mt-2">
+                                        <p>Total</p>
+                                        <p>{{ formatPrice(cartTotal) }}</p>
+                                    </div>
+                                </div>
+                                <button @click="placeOrder" class="mt-6 w-full bg-black text-white font-semibold px-4 py-3 rounded-lg shadow-md hover:bg-gray-800 transition-all">Place Order</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </transition>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-black text-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                    <div>
+                        <h4 class="font-bold text-lg mb-4">KHMART</h4>
+                        <p class="text-gray-400">Your destination for modern, timeless fashion.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-lg mb-4">Shop</h4>
+                        <ul class="space-y-2 text-gray-400">
+                            <li><a href="#" @click.prevent="activeCategory = 'Shoes'; navigateTo('shop')" class="hover:text-white">Shoes</a></li>
+                            <li><a href="#" @click.prevent="activeCategory = 'Clothes'; navigateTo('shop')" class="hover:text-white">Clothes</a></li>
+                            <li><a href="#" @click.prevent="activeCategory = 'Bags'; navigateTo('shop')" class="hover:text-white">Bags</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-lg mb-4">About</h4>
+                        <ul class="space-y-2 text-gray-400">
+                            <li><a href="#" @click.prevent="navigateTo('about')" class="hover:text-white">About Us</a></li>
+                            <li><a href="#" @click.prevent="navigateTo('contact')" class="hover:text-white">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-lg mb-4">Follow Us</h4>
+                        <div class="flex space-x-4">
+                            <a href="#" class="text-gray-400 hover:text-white">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.011 3.585-.069 4.85c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.585-.012-4.85-.07c-3.252-.148-4.771-1.691-4.919-4.919-.058-1.265-.069-1.645-.069-4.85s.011-3.585.069-4.85c.149-3.225 1.664-4.771 4.919 4.919 1.266-.057 1.644-.069 4.85-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948s.014 3.667.072 4.947c.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072s3.667-.014 4.947-.072c4.358-.2 6.78-2.618 6.98-6.98.059-1.281.073-1.689.073-4.948s-.014-3.667-.072-4.947c-.2-4.358-2.618-6.78-6.98-6.98-1.281-.059-1.689-.073-4.948-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.162 6.162 6.162 6.162-2.759 6.162-6.162-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4s1.791-4 4-4 4 1.79 4 4-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44 1.441-.645 1.441-1.44-.645-1.44-1.441-1.44z"/></svg>
+                            </a>
+                            <a href="#" class="text-gray-400 hover:text-white">
+                               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616v.064c0 2.296 1.634 4.208 3.803 4.649-.625.17-1.284.238-1.95.238-1.049 0-1.942-.093-2.78-.238.643 2.022 2.658 3.397 4.93 3.439-2.229 1.759-5.022 2.801-8.05 2.801-.52 0-1.033-.028-1.536-.09c2.889 1.851 6.331 2.926 10.03 2.926 12.043 0 18.622-10.043 18.086-18.734.966-.692 1.803-1.562 2.457-2.548z"/></svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400 text-sm">
+                    <p>&copy; 2025 KHMART. All Rights Reserved.</p>
+                </div>
+            </div>
+        </footer>
+
+        <!-- Order Success Modal -->
+        <div v-if="showOrderSuccessModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div class="bg-white rounded-lg shadow-xl p-8 max-w-sm w-full text-center">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+                    <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                <h3 class="text-2xl font-bold mt-4">Order Placed!</h3>
+                <p class="text-gray-600 mt-2">Thank you for your purchase. Your order is being processed.</p>
+                <div class="mt-6 space-y-3">
+                    <button @click="viewOrdersAndCloseModal" class="w-full bg-black text-white font-semibold px-4 py-3 rounded-lg shadow-md hover:bg-gray-800 transition-all">View Orders</button>
+                    <button @click="showOrderSuccessModal = false" class="w-full bg-gray-200 text-black font-semibold px-4 py-3 rounded-lg hover:bg-gray-300 transition-all">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp, ref, computed, watch } = Vue;
+
+        createApp({
+            setup() {
+                // State management
+                const currentPage = ref('home');
+                const isMenuOpen = ref(false);
+                const isSearchOpen = ref(false);
+                const activeCategory = ref('All');
+                const showToast = ref(false);
+                const toastMessage = ref('');
+                const selectedProduct = ref(null);
+                const detailQuantity = ref(1);
+                const activeImageIndex = ref(0);
+                let imageInterval = null;
+                const searchQuery = ref('');
+                const selectedPaymentMethod = ref('creditCard');
+                const showOrderSuccessModal = ref(false);
+                const orders = ref([]);
+                const users = ref([]);
+                const currentUser = ref(null);
+                const authError = ref('');
+                const loginForm = ref({ email: '', password: '' });
+                const signupForm = ref({ email: '', password: '' });
+
+                // Mock product data with multiple images
+                const products = ref([
+                    { id: 1, name: 'Nike Air Force 1 \'07', category: 'Shoes', price: 115, featured: true, imageUrl: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=800&auto=format&fit=crop', imageUrls: ['https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=800&auto=format&fit=crop', 'https://images.unsplash.com/photo-1543508282-6319a3e2621f?q=80&w=800&auto=format&fit=crop'], description: 'The radiance lives on in the Nike Air Force 1 \'07, the b-ball icon that puts a fresh spin on what you know best: crisp leather, bold colors and the perfect amount of flash to make you shine.' },
+                    { id: 2, name: 'Classic Denim Jacket', category: 'Clothes', price: 98, featured: true, imageUrl: 'https://imageseu.wrangler.com/is/image/EUWrangler/W4481514V_1?$KDP-XXLARGE$', imageUrls: ['https://imageseu.wrangler.com/is/image/EUWrangler/W4481514V_1?$KDP-XXLARGE$', 'https://images.wrangler.com/is/image/Wrangler/112323852-HERO?$PDP24-XXLARGE$&fit=crop'], description: 'The original jean jacket since 1967. A blank canvas for self-expression, the Trucker Jacket is a cultural icon, made with durable, non-stretch denim.' },
+                    { id: 3, name: 'Leather Transport Tote', category: 'Bags', price: 188, featured: true, imageUrl: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=800&auto=format&fit=crop', imageUrls: ['https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=800&auto=format&fit=crop', 'https://images.unsplash.com/photo-1594223274512-ad4803739b7c?q=80&w=800&auto=format&fit=crop'], description: 'Our best-selling carryall in Italian vegetable-tanned leather that burnishes with wear into a beautiful patina. Perfectly sized to hold a laptop, pouch, and more.' },
+                    { id: 4, name: 'Organic Cotton Tee', category: 'Clothes', price: 30, featured: true, imageUrl: 'https://orlonutrition.com/cdn/shop/products/orlo-shirt-004_2.jpg?v=1654224518&width=500', imageUrls: ['https://orlonutrition.com/cdn/shop/products/orlo-shirt-004_2.jpg?v=1654224518&width=500', 'https://images.unsplash.com/photo-1622445275463-afa2ab738c34?q=80&w=800&auto=format&fit=crop'], description: 'The perfect white tee. Made from 100% organic cotton for a soft, breathable feel with a classic crew neckline and relaxed fit.' },
+                    { id: 5, name: 'Birkenstock Arizona', category: 'Shoes', price: 110, imageUrl: 'https://www.birkenstock.com/dw/image/v2/BDXC_PRD/on/demandware.static/-/Sites-master-catalog/default/dw8c7d1fbe/51703/51703.jpg?sw=848&sh=848', imageUrls: ['https://www.birkenstock.com/dw/image/v2/BDXC_PRD/on/demandware.static/-/Sites-master-catalog/default/dw8c7d1fbe/51703/51703.jpg?sw=848&sh=848', 'https://birkenstockvillage.com/cdn/shop/files/birkenstock-birkenstock-arizona-iron-oiled-leather-soft-footbed-1.jpg?v=1691529574', 'https://shoesurfing.com/wp-content/uploads/2021/01/552801_1013645_top.jpg'], description: 'The often-imitated, never-duplicated, category-defining, two-strap wonder from Birkenstock. A comfort legend and a fashion staple.' },
+                    { id: 6, name: 'Herschel Classic Backpack', category: 'Bags', price: 65, imageUrl: 'https://herschel.com/content/dam/herschel/products/11544/11544-05033-OS_01.jpg', imageUrls: ['https://herschel.com/content/dam/herschel/products/11544/11544-05033-OS_01.jpg', 'https://herschel.com/content/dam/herschel/products/11546/11546-ALLCOLORS_07.jpg'], description: 'The Herschel Classic™ backpack stays true to its timeless design, offering a clean and simple silhouette that is perfectly tailored to your everyday needs.' },
+                    { id: 7, name: 'Patagonia Baggies Shorts', category: 'Clothes', price: 65, imageUrl: 'https://images.unsplash.com/photo-1591195853828-11db59a44f6b?q=80&w=800&auto=format&fit=crop', imageUrls: ['https://images.unsplash.com/photo-1591195853828-11db59a44f6b?q=80&w=800&auto=format&fit=crop', 'https://lennyshoe.com/cdn/shop/products/patagonia-womens-baggies-shorts-5-lago-blue-390163.jpg?v=1689265948'], description: 'Our iconic shorts for everything. Made from sturdy, quick-drying 100% recycled nylon with a DWR (durable water repellent) finish.' },
+                    { id: 8, name: 'Dr. Martens 1460 Boots', category: 'Shoes', price: 170, imageUrl: 'https://cdn.media.amplience.net/i/drmartens/11822006.80.jpg?$medium$', imageUrls: ['https://cdn.media.amplience.net/i/drmartens/11822006.80.jpg?$medium$', 'https://m.media-amazon.com/images/I/810eeJTINKL._AC_SL1500_.jpg', 'https://d2ob0iztsaxy5v.cloudfront.net/product/140719/1407197020m8_zm.jpg'], description: 'The original Dr. Martens boot. Instantly recognizable, the 1460 is built to last with a durable Goodyear welt and our signature AirWair™ sole.' },
+                ]);
+
+                const cart = ref([]);
+
+                // Computed properties
+                const featuredProducts = computed(() => products.value.filter(p => p.featured));
+
+                const shopProducts = computed(() => {
+                    let productsToShow = products.value;
+
+                    // Apply search filter first
+                    if (searchQuery.value.trim() !== '') {
+                        const lowerCaseQuery = searchQuery.value.toLowerCase();
+                        productsToShow = productsToShow.filter(product =>
+                            product.name.toLowerCase().includes(lowerCaseQuery) ||
+                            product.description.toLowerCase().includes(lowerCaseQuery)
+                        );
+                    }
+
+                    // Then apply category filter
+                    if (activeCategory.value !== 'All') {
+                        productsToShow = productsToShow.filter(p => p.category === activeCategory.value);
+                    }
+
+                    return productsToShow;
+                });
+
+                const cartItemCount = computed(() => cart.value.reduce((sum, item) => sum + item.quantity, 0));
+                const cartTotal = computed(() => cart.value.reduce((sum, item) => sum + (item.price * item.quantity), 0));
+                const activeImageUrl = computed(() => {
+                    if (selectedProduct.value && selectedProduct.value.imageUrls) {
+                        return selectedProduct.value.imageUrls[activeImageIndex.value];
+                    }
+                    return '';
+                });
+
+                // Methods
+                const navigateTo = (page) => {
+                    currentPage.value = page;
+                    authError.value = ''; // Clear auth errors on navigation
+                    window.scrollTo(0, 0);
+                };
+
+                const goToShopOnSearch = () => {
+                    if (currentPage.value !== 'shop') {
+                        navigateTo('shop');
+                    }
+                };
+
+                const triggerToast = (message) => {
+                    toastMessage.value = message;
+                    showToast.value = true;
+                    setTimeout(() => { showToast.value = false; }, 3000);
+                };
+
+                const addToCart = (product, quantity) => {
+                    const existingItem = cart.value.find(item => item.id === product.id);
+                    if (existingItem) {
+                        existingItem.quantity += quantity;
+                    } else {
+                        cart.value.push({ ...product, quantity: quantity });
+                    }
+                    triggerToast(`${quantity} x ${product.name} added to cart!`);
+                };
+
+                const viewProduct = (product) => {
+                    selectedProduct.value = product;
+                    detailQuantity.value = 1;
+                    activeImageIndex.value = 0;
+                    navigateTo('productDetail');
+                };
+
+                const startImageLoop = () => {
+                    stopImageLoop(); // Ensure no multiple intervals are running
+                    imageInterval = setInterval(() => {
+                        const newIndex = (activeImageIndex.value + 1) % selectedProduct.value.imageUrls.length;
+                        activeImageIndex.value = newIndex;
+                    }, 3000);
+                };
+
+                const stopImageLoop = () => {
+                    clearInterval(imageInterval);
+                };
+
+                const setActiveImage = (index) => {
+                    activeImageIndex.value = index;
+                    startImageLoop(); // Reset interval on manual change
+                };
+
+                const removeFromCart = (productId) => {
+                    cart.value = cart.value.filter(item => item.id !== productId);
+                };
+
+                const incrementQuantity = (productId) => {
+                    const item = cart.value.find(item => item.id === productId);
+                    if (item) item.quantity++;
+                };
+
+                const decrementQuantity = (productId) => {
+                    const item = cart.value.find(item => item.id === productId);
+                    if (item && item.quantity > 1) {
+                        item.quantity--;
+                    } else if (item) {
+                        removeFromCart(productId);
+                    }
+                };
+
+                const formatPrice = (price) => {
+                    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(price);
+                };
+
+                const submitForm = (event) => {
+                    triggerToast("Thank you for your message!");
+                    event.target.reset();
+                };
+
+                const placeOrder = () => {
+                    const newOrder = {
+                        id: (orders.value.length + 1).toString().padStart(5, '0'),
+                        date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+                        items: [...cart.value],
+                        total: cartTotal.value,
+                        status: 'Processing'
+                    };
+                    orders.value.unshift(newOrder);
+                    cart.value = [];
+                    showOrderSuccessModal.value = true;
+                };
+
+                const viewOrdersAndCloseModal = () => {
+                    showOrderSuccessModal.value = false;
+                    navigateTo('orders');
+                };
+
+                const handleLogin = () => {
+                    authError.value = '';
+                    const user = users.value.find(u => u.email === loginForm.value.email && u.password === loginForm.value.password);
+                    if (user) {
+                        currentUser.value = user;
+                        navigateTo('home');
+                        loginForm.value = { email: '', password: '' };
+                    } else {
+                        authError.value = 'Invalid email or password.';
+                    }
+                };
+
+                const handleSignup = () => {
+                    authError.value = '';
+                    const userExists = users.value.some(u => u.email === signupForm.value.email);
+                    if (userExists) {
+                        authError.value = 'An account with this email already exists.';
+                    } else {
+                        const newUser = { id: Date.now(), ...signupForm.value };
+                        users.value.push(newUser);
+                        currentUser.value = newUser;
+                        navigateTo('home');
+                        signupForm.value = { email: '', password: '' };
+                    }
+                };
+
+                const logout = () => {
+                    currentUser.value = null;
+                    navigateTo('home');
+                };
+
+                watch(currentPage, (newPage) => {
+                    if (newPage === 'productDetail' && selectedProduct.value) {
+                        startImageLoop();
+                    } else {
+                        stopImageLoop();
+                    }
+                });
+
+                return {
+                    currentPage, isMenuOpen, isSearchOpen, products, cart, activeCategory,
+                    featuredProducts, shopProducts, cartItemCount, cartTotal,
+                    showToast, toastMessage, selectedProduct, detailQuantity,
+                    activeImageIndex, activeImageUrl, searchQuery, selectedPaymentMethod,
+                    showOrderSuccessModal, orders, currentUser, authError, loginForm, signupForm,
+                    navigateTo, goToShopOnSearch, addToCart, viewProduct, removeFromCart,
+                    incrementQuantity, decrementQuantity, formatPrice, submitForm,
+                    placeOrder, viewOrdersAndCloseModal, setActiveImage, handleLogin, handleSignup, logout
+                };
+            },
+            components: {
+                ...LucideVueNext
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
