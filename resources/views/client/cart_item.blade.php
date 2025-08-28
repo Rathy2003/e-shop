@@ -31,7 +31,7 @@
         {{-- Cart Page --}}
         <transition>
             <div v-if="page_index == 0">
-                <div v-if="cart_items.length > 0" class="hidden md:block container min-h-[100dvh] 0 mx-auto px-8">
+                <div v-if="cart_items.length > 0" class="hidden md:block container min-h-[100dvh] 0 mx-auto px-4 sm:px-8">
                     {{-- Start Cart Item Listing --}}
                     <div class="w-full p-9 shadow">
                         {{-- Start Cart Item Header --}}
@@ -112,7 +112,7 @@
                 </div>
 
                 {{-- Start Mobile Cart List and Checkout --}}
-                <div v-if="cart_items.length > 0" class="px-8 flex flex-col gap-5 my-8 md:hidden">
+                <div v-if="cart_items.length > 0" class="px-4 md:px-8 flex flex-col gap-5 my-8 md:hidden">
                     <div
                         v-for="(item,index) in cart_items" :key="'cart_item'+index"
                         class="flex gap-5 shadow p-3 rounded relative"
@@ -327,8 +327,8 @@
                                     <p>$[[getTotalSelectedCartItem]]</p>
                                 </div>
                             </div>
-                            <button @click="processOrder"
-                                    class="mt-6 w-full bg-black text-white font-semibold px-4 py-3 rounded-lg shadow-md hover:bg-gray-800 transition-all">
+                            <button @click="processOrder" :disabled="!selectedPaymentMethod"
+                                    class="btn btn-primary block w-full mt-5 mx-auto">
                                 Place Order
                             </button>
                         </div>
@@ -349,7 +349,7 @@
                 <h1 class="text-2xl mt-5 font-bold">Thank you for you purchase</h1>
 
                 {{-- Start Order Summary --}}
-                <div class="shadow min-w-[530px] py-4 px-8 mt-5">
+                <div class="shadow max-w-[530px] w-full py-4 px-8 mt-5">
                     <h1 class="font-bold text-xl">Order Summary</h1>
                     <div class="mt-5 flex flex-col gap-4">
                         <div
@@ -375,7 +375,6 @@
 
                 </div>
                 {{-- End Order Summary --}}
-
                 <a href="{{route('client.shop')}}" class="btn btn-primary block mt-5 mx-auto">Back To Shop</a>
             </div>
         </transition>
@@ -411,6 +410,7 @@
                     cart_items: [],
                     open_remove_modal:false,
                     page_index:0,
+                    selectedPaymentMethod:null,
                 }
             },
             methods: {
@@ -493,10 +493,10 @@
                 },
                 processCheckout(){
                     this.page_index=1;
+                    window.scrollTo(0, 0);
                 },
                 // Checkout
                 processOrder(){
-                    // this.page_index=2;
                     let carts = this.cart_items.filter(x => x.selected)
                     let data = {
                         user_id:"{{Auth::user()->id}}",
@@ -519,6 +519,7 @@
                     axios.post("{{route('client.checkout.process-checkout')}}",data).then(res => {
                         if(res.status === 201){
                             this.page_index=2;
+                            window.scrollTo(0, 0);
                         }
                     })
                 }
