@@ -238,13 +238,13 @@
 
                         {{-- Start Add To Cart Button (Mobile) --}}
                         @if(!Auth::check())
-                            <button @click="openModal()" class="text-sm px-4 text-white py-3 bg-black rounded cursor-pointer hover:bg-black/50">
+                            <button @click="openModal()" class="text-sm px-4 text-white py-3 bg-black rounded cursor-pointer hover:bg-black/50 text-white">
                                 <i class="fa-solid fa-cart-plus"></i>
                             </button>
                         @else
                             <div class="cart-container" :class="{'added':is_adding}" id="cart">
                                 <div class="plus-one">+[[quantity]]</div>
-                                <button @click="addToCart()" class="text-sm px-4 text-white py-3 bg-black rounded cursor-pointer hover:bg-black/50" :disabled="is_adding">
+                                <button @click="addToCart()" class="text-sm px-4 text-white py-3 bg-black rounded cursor-pointer hover:bg-black/50 text-white" :disabled="is_adding">
                                     <i class="fa-solid fa-cart-plus"></i>
                                 </button>
                             </div>
