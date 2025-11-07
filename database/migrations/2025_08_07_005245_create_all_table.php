@@ -60,6 +60,16 @@ return new class extends Migration
             $table->decimal('price', 10, 2);
             $table->timestamps();
         });
+
+        Schema::create('slider',function (Blueprint $table){
+           $table->id();
+           $table->string('title');
+           $table->text('description')->nullable();
+           $table->string('link')->nullable();
+           $table->text('image');
+           $table->tinyInteger('order');
+           $table->tinyInteger('status')->default(1);
+        });
     }
 
     /**
@@ -72,5 +82,6 @@ return new class extends Migration
         Schema::dropIfExists('user_cart');
         Schema::dropIfExists('order');
         Schema::dropIfExists('order_detail');
+        Schema::dropIfExists('slider');
     }
 };

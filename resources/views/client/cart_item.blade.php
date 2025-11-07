@@ -28,6 +28,47 @@
         </transition>
         {{-- End Remove Cart Dialog --}}
 
+        {{-- Payment Modal --}}
+        <transition name="fade">
+            <div v-if="open_payment_modal" class="fixed top-0 left-0 w-full h-full bg-black/50 z-[40]">
+                <div class="fixed py-10 bg-white top-1/2 max-w-[800px] mr-5  left-1/2 translate-x-[-50%] translate-y-[-50%] rounded shadow relative z-[50]">
+                    <button @click="closePaymentModal()" type="button" class="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center">
+                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                        </svg>
+                        <span class="sr-only">Close modal</span>
+                    </button>
+                    <hr class="mt-3"/>
+                    <div class="relative p-4 md:p-5 flex items-center justify-center min-h-[480px]">
+                           {{-- Start Loading --}}
+                           <div class="bg-white absolute top-0 w-full h-full left-0 items-center justify-center flex" :class="{'!hidden':!is_loading_generateQR}">
+                               <span class="loader"></span>
+                           </div>
+                           {{-- End Loading --}}
+
+                            <iframe ref="preview" v-if="!is_success_checkout && !is_qr_expired" class="mt-5 min-h-[480px] w-full">
+                            </iframe>
+
+                            <div v-if="is_success_checkout && !is_qr_expired" class="flex flex-col items-center gap-2 justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-20 text-[#18c525]">
+                                    <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
+                                </svg>
+                                <h2>Payment Successful 🎉</h2>
+                                <p>Thank you! Your payment has been processed successfully.</p>
+                                <p>A confirmation email has been sent to your inbox.</p>
+                                <button @click="closePaymentModal()" class="mt-5 py-2 rounded-md bg-[#f1f0f0] min-w-[200px]">Close</button>
+                            </div>
+
+                            <div v-if="is_qr_expired && !is_success_checkout" class="absolute flex justify-center gap-5 flex-col items-center top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2">
+                                <i class="fa-solid fa-circle-exclamation text-red-500" style="font-size: 55px;"></i>
+                                <span class="text-red-500 text-center">QR Code Expired.Please try again.!</span>
+                                <button type="button" @click="closePaymentModal()" style="padding: 5px 21px;" class="btn btn-primary">Close</button>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </transition>
+
         {{-- Cart Page --}}
         <transition>
             <div v-if="page_index == 0">
@@ -263,47 +304,21 @@
                         <div class="bg-white p-6 rounded-lg shadow-md border">
                             <h3 class="text-xl font-semibold mb-4">Payment Method</h3>
                             <div class="space-y-4">
-                                <!-- Credit Card -->
-                                <label class="flex items-center p-4 border rounded-lg cursor-pointer transition-all"
-                                       :class="{ 'bg-gray-100 border-black': selectedPaymentMethod === 'creditCard' }">
-                                    <input type="radio" v-model="selectedPaymentMethod" value="creditCard"
-                                           class="h-4 w-4 text-black focus:ring-black">
-                                    <span class="ml-3 font-semibold">Credit Card</span>
-                                </label>
-                                <div v-if="selectedPaymentMethod === 'creditCard'" class="p-4 space-y-4 border-t">
-                                    <div>
-                                        <label for="cardNumber" class="block text-sm font-medium text-gray-700">Card
-                                            Number</label>
-                                        <input type="text" id="cardNumber" placeholder="•••• •••• •••• ••••"
-                                               class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black">
-                                    </div>
-                                    <div class="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label for="expiryDate" class="block text-sm font-medium text-gray-700">Expiry
-                                                Date</label>
-                                            <input type="text" id="expiryDate" placeholder="MM / YY"
-                                                   class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black">
-                                        </div>
-                                        <div>
-                                            <label for="cvc" class="block text-sm font-medium text-gray-700">CVC</label>
-                                            <input type="text" id="cvc" placeholder="•••"
-                                                   class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black">
-                                        </div>
-                                    </div>
-                                </div>
                                 <!-- PayPal -->
+{{--                                <label class="flex items-center p-4 border rounded-lg cursor-pointer transition-all"--}}
+{{--                                       :class="{ 'bg-gray-100 border-black': selectedPaymentMethod === 'paypal' }">--}}
+{{--                                    <input type="radio" v-model="selectedPaymentMethod" value="paypal"--}}
+{{--                                           class="h-4 w-4 text-black focus:ring-black">--}}
+{{--                                    <span class="ml-3 font-semibold">PayPal</span>--}}
+{{--                                </label>--}}
+                                <!-- KHQR -->
                                 <label class="flex items-center p-4 border rounded-lg cursor-pointer transition-all"
-                                       :class="{ 'bg-gray-100 border-black': selectedPaymentMethod === 'paypal' }">
-                                    <input type="radio" v-model="selectedPaymentMethod" value="paypal"
+                                       :class="{ 'bg-gray-100 border-black': selectedPaymentMethod === 'khqr' }">
+                                    <input type="radio" v-model="selectedPaymentMethod" value="khqr"
                                            class="h-4 w-4 text-black focus:ring-black">
-                                    <span class="ml-3 font-semibold">PayPal</span>
-                                </label>
-                                <!-- Cash on Delivery -->
-                                <label class="flex items-center p-4 border rounded-lg cursor-pointer transition-all"
-                                       :class="{ 'bg-gray-100 border-black': selectedPaymentMethod === 'cod' }">
-                                    <input type="radio" v-model="selectedPaymentMethod" value="cod"
-                                           class="h-4 w-4 text-black focus:ring-black">
-                                    <span class="ml-3 font-semibold">Cash on Delivery</span>
+                                    <div>
+                                        <img class="h-[14px] ml-[15px]" src="{{asset("images/KHQR_Logo.png")}}"/>
+                                    </div>
                                 </label>
                             </div>
                         </div>
@@ -409,8 +424,15 @@
                     selected_cart_id:null,
                     cart_items: [],
                     open_remove_modal:false,
+                    open_payment_modal:false,
                     page_index:0,
-                    selectedPaymentMethod:null,
+                    selectedPaymentMethod:"khqr",
+                    payment_id:null,
+                    is_loading_generateQR:true,
+                    is_qr_expired:false,
+                    is_success_checkout:false,
+                    timer:null,
+                    qrcode_timer: null,
                 }
             },
             methods: {
@@ -432,13 +454,22 @@
                         cart_id:cart_id,
                         quantity:quantity,
                     })
-                        .then((response) => {
-                            // console.log(response.data);
-                        })
+                    .then((response) => {
+                        // console.log(response.data);
+                    })
                 },
                 closeModal(){
                     this.selected_cart_id = null;
                     this.open_remove_modal = false
+                },
+                closePaymentModal(){
+                  this.is_loading_generateQR = true;
+                  this.open_payment_modal = false;
+                  this.is_success_checkout = false;
+                  this.is_qr_expired = false;
+                  this.page_index = 1;
+                  window.location.reload();
+                  document.body.style.overflow = '';
                 },
                 removeCart(item){
                     this.selected_cart_id = item.id;
@@ -497,11 +528,73 @@
                 },
                 // Checkout
                 processOrder(){
+                    // prevent user scroll when open modal
+                    document.body.style.overflow = 'hidden';
+                    this.is_loading_generateQR = true;
                     let carts = this.cart_items.filter(x => x.selected)
                     let data = {
-                        user_id:"{{Auth::user()->id}}",
+                        total_price:0,
+                    }
+                    carts.forEach(item => {
+                        let price = item.product.discount ? (item.product.price - (item.product.price * item.product.discount / 100)) * item.quantity : item.product.price * item.quantity;
+                        const cart_item = {
+                            product_id: item.product.id,
+                            quantity: item.quantity,
+                            price: item.product.price,
+                        }
+                        data.total_price+=price
+                    })
+
+                    this.open_payment_modal = true
+                    axios.post("{{route('client.checkout.process-checkout')}}",data).then(res => {
+                        if(res.status === 201){
+                            this.payment_id = res.data.payment_id;
+                            setTimeout(() => this.is_loading_generateQR = false, 1500)
+                            this.$nextTick(() => {
+                                const html = res.data.html;
+                                const iframe = this.$refs.preview;
+                                const doc = iframe.contentWindow.document;
+                                doc.open();
+                                doc.write(html);
+                                doc.close();
+                                setTimeout(() => {
+                                    this.is_qr_expired = true
+                                    this.is_success_checkout = false
+                                    clearInterval(this.timer)
+                                }, 300000)
+                                if(res.status === 201){
+                                    this.page_index=2;
+                                    window.scrollTo(0, 0);
+                                    //console.log(res.data)
+                                }
+                                this.timer = setInterval(() => this.check_transaction(res.data.payment_id),9000)
+                            })
+                        }
+                    })
+                },
+                check_transaction(payment_id){
+                    axios.post("{{route('client.checkout.check-transaction')}}",{
+                        payment_id:payment_id,
+                    })
+                    .then((response) => {
+                        if(response.status === 200){
+                            if(response.data.success){
+                                this.process_create_order()
+                                clearInterval(this.timer)
+                                this.is_success_checkout = true
+                                this.process_create_order();
+                                // console.log("Transaction completed successfully")
+
+                            }
+                        }
+                    })
+                },
+                process_create_order(){
+                    let carts = this.cart_items.filter(x => x.selected)
+                    let data = {
                         total_price:0,
                         items: [],
+                        payment_id:this.payment_id,
                         cart_items: [],
                     }
                     carts.forEach(item => {
@@ -516,11 +609,8 @@
                         data.total_price+=price
                     })
 
-                    axios.post("{{route('client.checkout.process-checkout')}}",data).then(res => {
-                        if(res.status === 201){
-                            this.page_index=2;
-                            window.scrollTo(0, 0);
-                        }
+                    axios.post("{{route('client.checkout.create_order')}}",data).then(res => {
+                        //console.log(res)
                     })
                 }
             }

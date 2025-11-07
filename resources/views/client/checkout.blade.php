@@ -83,13 +83,17 @@
                                    class="h-4 w-4 text-black focus:ring-black">
                             <span class="ml-3 font-semibold">PayPal</span>
                         </label>
-                        <!-- Cash on Delivery -->
-                        <label class="flex items-center p-4 border rounded-lg cursor-pointer transition-all"
-                               :class="{ 'bg-gray-100 border-black': selectedPaymentMethod === 'cod' }">
-                            <input type="radio" v-model="selectedPaymentMethod" value="cod"
-                                   class="h-4 w-4 text-black focus:ring-black">
-                            <span class="ml-3 font-semibold">Cash on Delivery</span>
-                        </label>
+                        <!-- KHQR -->
+{{--                        <label class="flex items-center p-4 border rounded-lg cursor-pointer transition-all"--}}
+{{--                               :class="{ 'bg-gray-100 border-black': selectedPaymentMethod === 'cod' }">--}}
+{{--                            <input type="radio" v-model="selectedPaymentMethod" value="cod"--}}
+{{--                                   class="h-4 w-4 text-black focus:ring-black">--}}
+{{--                            <span class="ml-3 font-semibold">--}}
+{{--                                <div>--}}
+{{--                                    <img src="{{asset("images/KHQR_Logo.png")}}"/>--}}
+{{--                                </div>--}}
+{{--                            </span>--}}
+{{--                        </label>--}}
                     </div>
                 </div>
             </div>

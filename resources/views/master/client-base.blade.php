@@ -18,6 +18,11 @@
     {{--  FontAwesome CDN  --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha512-DxV+EoADOkOygM4IR9yXP8Sb2qwgidEmeqAEmDKIOfPRQZOWbXCzLC6vjbZyy0vPisbH2SyW27+ddLVCN+OMzQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="{{asset('css/global.css')}}">
+
+    {{--  CSS for OWL Carosel   --}}
+    <link rel="stylesheet" href="{{asset("css/owlcarousel/owl.carousel.min.css")}}">
+    <link rel="stylesheet" href="{{asset("css/owlcarousel/owl.theme.default.min.css")}}">
+
     <style>
         /* Custom styles to complement Tailwind */
         body {
@@ -57,6 +62,25 @@
         }
         .slide-enter-from, .slide-leave-to {
             transform: translateX(-100%);
+        }
+        .loader {
+            width: 48px;
+            height: 48px;
+            border: 5px solid #d5d5d5;
+            border-bottom-color: transparent;
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+
+        @keyframes rotation {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
     </style>
@@ -309,6 +333,10 @@
         </div>
     </footer>
 </body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="{{asset("js/owlcarousel/owl.carousel.min.js")}}"></script>
+
 <!-- Vue.js CDN -->
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 <!-- Axios CDN -->

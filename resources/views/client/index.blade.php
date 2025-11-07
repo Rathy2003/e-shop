@@ -22,12 +22,30 @@
                             More</a>
                     </div>
                 </div>
-                <div class="relative">
-                    <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2070&auto=format&fit=crop"
-                         alt="Featured Outfit" class="rounded-lg shadow-2xl w-full h-full object-cover">
-                    <div class="absolute -bottom-4 -right-4 bg-white p-4 rounded-lg shadow-lg hidden md:block border">
-                        <p class="font-bold">New Summer Collection</p>
-                        <p class="text-sm text-gray-500">Just Arrived</p>
+{{--                <div class="relative">--}}
+{{--                    <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2070&auto=format&fit=crop"--}}
+{{--                         alt="Featured Outfit" class="rounded-lg shadow-2xl w-full h-full object-cover">--}}
+{{--                    <div class="absolute -bottom-4 -right-4 bg-white p-4 rounded-lg shadow-lg hidden md:block border">--}}
+{{--                        <p class="font-bold">New Summer Collection</p>--}}
+{{--                        <p class="text-sm text-gray-500">Just Arrived</p>--}}
+{{--                    </div>--}}
+{{--                </div>--}}
+                <div class="owl-carousel">
+                    <div>
+                        <img src="{{asset("images/slider/slide_1.jpg")}}"
+                             alt="Slider 1" class="rounded-lg shadow-2xl w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <img src="{{asset("images/slider/slide_2.jpg")}}"
+                             alt="Slider 2" class="rounded-lg shadow-2xl w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <img src="{{asset("images/slider/slide_3.jpg")}}"
+                             alt="Slider 3" class="rounded-lg shadow-2xl w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <img src="{{asset("images/slider/slide_4.jpg")}}"
+                             alt="Slider 4" class="rounded-lg shadow-2xl w-full h-full object-cover">
                     </div>
                 </div>
             </div>
@@ -82,4 +100,19 @@
             </div>
         </div>
     </section>
+@endsection
+
+@section('script')
+    <script>
+        $(document).ready(function(){
+            $(".owl-carousel").owlCarousel({
+                items:1,
+                loop:true,
+                dots:true,
+                dotsEach:true,
+                autoplay:true,
+                margin:28,
+            });
+        });
+    </script>
 @endsection
