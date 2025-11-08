@@ -32,7 +32,7 @@
         <transition name="fade">
             <div v-if="open_payment_modal" class="fixed top-0 left-0 w-full h-full bg-black/50 z-[40]">
                 <div class="fixed py-10 bg-white top-1/2 max-w-[800px] mr-5  left-1/2 translate-x-[-50%] translate-y-[-50%] rounded shadow relative z-[50]">
-                    <button @click="closePaymentModal()" type="button" class="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center">
+                    <button @click="is_success_checkout && !is_qr_expired ? closeSuccessModal() : closePaymentModal()" type="button" class="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center">
                         <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
                         </svg>
@@ -56,7 +56,7 @@
                                 <h2>Payment Successful 🎉</h2>
                                 <p>Thank you! Your payment has been processed successfully.</p>
                                 <p>A confirmation email has been sent to your inbox.</p>
-                                <button @click="closePaymentModal()" class="mt-5 py-2 rounded-md bg-[#f1f0f0] min-w-[200px]">Close</button>
+                                <button @click="closeSuccessModal()" class="mt-5 py-2 rounded-md bg-[#f1f0f0] min-w-[200px]">Close</button>
                             </div>
 
                             <div v-if="is_qr_expired && !is_success_checkout" class="absolute flex justify-center gap-5 flex-col items-center top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2">
@@ -471,9 +471,14 @@
                   window.location.reload();
                   document.body.style.overflow = '';
                 },
+                closeSuccessModal(){
+                    this.open_payment_modal = false;
+                    this.page_index = 2;
+                },
                 removeCart(item){
                     this.selected_cart_id = item.id;
                     this.open_remove_modal = true;
+
                 },
                 decreaseQuantity(item) {
                     let cartItem = this.cart_items.find(x => x.id === item.id);
@@ -582,9 +587,6 @@
                                 this.process_create_order()
                                 clearInterval(this.timer)
                                 this.is_success_checkout = true
-                                this.process_create_order();
-                                // console.log("Transaction completed successfully")
-
                             }
                         }
                     })

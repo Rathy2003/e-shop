@@ -15,7 +15,7 @@ class ProductSeeder extends Seeder
     public function run(): void
     {
         // Start Category 1 (Shoes)
-        Product::create([
+        Product::firstOrCreate([
            "name" => "Dunk Low Basketball Sneaker (Women)",
            "slug" => Str::slug("Dunk Low Basketball Sneaker (Women)"),
            "description" => "A streamlined profile keeps the old-school vibes shooting and scoring in a heritage basketball shoe that's still winning games as a modern off-court sneaker. Timeless details frame the look in vintage authenticity, while the padded collar and underfoot pivot circle kick up the sneakerhead energy.Not Removable insoleLace-up styleSynthetic upper/textile lining/rubber sole Imported Item #7434624",
@@ -26,7 +26,7 @@ class ProductSeeder extends Seeder
            "category_id" => 1,
         ]);
 
-        Product::create([
+        Product::firstOrCreate([
             "name" => "adidas Men\'s Ultradream DNA Sneaker",
             "slug" => Str::slug("adidas Men\'s Ultradream DNA Sneaker"),
             "description" => "Men\'s adidas shoes with a full-length midsole for extra comfort\r\nDREAMSTRIKE+ MIDSOLE: Full-length Dreamstrike EVA for comfort and support\r\nFLEXIBLE UPPER: Soft textile upper is stretchy and comfortable\r\nSTABILITY: Quarter cage and external heel counter for stability\r\nMADE IN PART WITH RECYCLED CONTENT: This product features at least 20% recycled materials. By reusing materials that have already been created, we help to reduce waste and our reliance on finite resources and reduce the footprint of the products we make",
@@ -37,7 +37,7 @@ class ProductSeeder extends Seeder
             "category_id" => 1,
         ]);
 
-        Product::create([
+        Product::firstOrCreate([
             "name" => "Sloane Ankle Strap Sandal (Women)",
             "slug" => Str::slug("Sloane Ankle Strap Sandal (Women)"),
             "description" => "Set your style to vacation mode whenever you're in this leather and suede sandal cushioned by a OrthoLite® Eco™ footbed for all-day comfort.",
@@ -48,7 +48,7 @@ class ProductSeeder extends Seeder
             "category_id" => 1,
         ]);
 
-        Product::create([
+        Product::firstOrCreate([
             "name" => "Gender Inclusive 1906R Running Shoe",
             "slug" => Str::slug("Gender Inclusive 1906R Running Shoe"),
             "description" => "A fusion of cushioning and shock-absorbing technologies puts performance comfort under every step in a stabilizing running shoe designed for a smooth ride and everyday versatility.
@@ -65,7 +65,7 @@ Upper: NLOCK webbing provides a secure, stay-put fit. Breathable mesh promotes c
 
 
         // Start Category 2 (Clothes)
-        Product::create([
+        Product::firstOrCreate([
             "name" => "Nike Men's Sportswear Club Fleece Hoodie",
             "slug" => Str::slug("Nike Men's Sportswear Club Fleece Hoodie"),
             "description" => "Soft fleece hoodie with kangaroo pocket and adjustable drawstring hood. Perfect for casual wear and workouts.",
@@ -76,7 +76,7 @@ Upper: NLOCK webbing provides a secure, stay-put fit. Breathable mesh promotes c
             "category_id" => 2,
         ]);
 
-        Product::create([
+        Product::firstOrCreate([
             "name" => "Levi's Men's 511 Slim Fit Jeans",
             "slug" => Str::slug("Levi's Men's 511 Slim Fit Jeans"),
             "description" => "Classic slim-fit jeans made with stretch denim for comfort and mobility.",
@@ -87,7 +87,7 @@ Upper: NLOCK webbing provides a secure, stay-put fit. Breathable mesh promotes c
             "category_id" => 2,
         ]);
 
-        Product::create([
+        Product::firstOrCreate([
             "name" => "Calvin Klein Women's Modern Cotton Bralette",
             "slug" => Str::slug("Calvin Klein Women's Modern Cotton Bralette"),
             "description" => "Iconic bralette with racerback design and Calvin Klein logo band.",
@@ -98,7 +98,7 @@ Upper: NLOCK webbing provides a secure, stay-put fit. Breathable mesh promotes c
             "category_id" => 2,
         ]);
 
-        Product::create([
+        Product::firstOrCreate([
             "name" => "Tommy Hilfiger Men's Classic Polo Shirt",
             "slug" => Str::slug("Tommy Hilfiger Men's Classic Polo Shirt"),
             "description" => "Short-sleeve polo shirt with embroidered flag logo, made of breathable cotton.",
@@ -109,7 +109,7 @@ Upper: NLOCK webbing provides a secure, stay-put fit. Breathable mesh promotes c
             "category_id" => 2,
         ]);
 
-        Product::create([
+        Product::firstOrCreate([
             "name" => "Adidas Originals Women's Trefoil Tee",
             "slug" => Str::slug("Adidas Originals Women's Trefoil Tee"),
             "description" => "Soft cotton tee featuring the iconic Adidas Trefoil logo.",
@@ -120,7 +120,7 @@ Upper: NLOCK webbing provides a secure, stay-put fit. Breathable mesh promotes c
             "category_id" => 2,
         ]);
 
-        Product::create([
+        Product::firstOrCreate([
             "name" => "Columbia Men's Watertight II Jacket",
             "slug" => Str::slug("Columbia Men's Watertight II Jacket"),
             "description" => "Lightweight waterproof rain jacket with adjustable hood and packable design.",
@@ -131,7 +131,7 @@ Upper: NLOCK webbing provides a secure, stay-put fit. Breathable mesh promotes c
             "category_id" => 2,
         ]);
 
-        Product::create([
+        Product::firstOrCreate([
             "name" => "Champion Men's Powerblend Sweatpants",
             "slug" => Str::slug("Champion Men's Powerblend Sweatpants"),
             "description" => "Fleece jogger pants with adjustable waistband and side pockets.",
@@ -142,7 +142,7 @@ Upper: NLOCK webbing provides a secure, stay-put fit. Breathable mesh promotes c
             "category_id" => 2,
         ]);
 
-        Product::create([
+        Product::firstOrCreate([
             "name" => "Under Armour Women's Tech Twist V-Neck",
             "slug" => Str::slug("Under Armour Women's Tech Twist V-Neck"),
             "description" => "Lightweight quick-dry V-neck tee for workouts and training.",
@@ -153,7 +153,7 @@ Upper: NLOCK webbing provides a secure, stay-put fit. Breathable mesh promotes c
             "category_id" => 2,
         ]);
 
-        Product::create([
+        Product::firstOrCreate([
             "name" => "The North Face Men's Resolve 2 Jacket",
             "slug" => Str::slug("The North Face Men's Resolve 2 Jacket"),
             "description" => "Durable waterproof, windproof jacket with breathable mesh lining.",
@@ -164,7 +164,7 @@ Upper: NLOCK webbing provides a secure, stay-put fit. Breathable mesh promotes c
             "category_id" => 2,
         ]);
 
-        Product::create([
+        Product::firstOrCreate([
             "name" => "Dockers Men's Classic Fit Easy Khaki Pants",
             "slug" => Str::slug("Dockers Men's Classic Fit Easy Khaki Pants"),
             "description" => "Stretch khakis with wrinkle-free fabric and classic straight fit.",
@@ -178,7 +178,7 @@ Upper: NLOCK webbing provides a secure, stay-put fit. Breathable mesh promotes c
 
 
         // Start Category 3 (Bags)
-        Product::create([
+        Product::firstOrCreate([
             "name" => "Crossbody Bag for Women Waterproof Shoulder Bag Messenger Bag Casual Nylon Purse Handbag",
             "slug" => Str::slug("Crossbody Bag for Women Waterproof Shoulder Bag Messenger Bag Casual Nylon Purse Handbag"),
             "description" => "Size: Large size:12.2 x 4.3 x 8.6 inch ;Small size:10.2 x 3.5 x 7.8 inch (L x W x H),.Lightweight crossbody bags for women travel and everyday use. The New Zipper Feature: The zipper puller may be in the middle of the track while both end is closed. Open the forward end of the zipper with your finger and then you can see a normal functioning zipper. Now zip up all your porckets and get ready for your trip!\r\nMaterial:Made of Polyester lining lightweight water resistant nylon with classic zippers, smooth and easy to open and close.\r\nMultifunctional Structure:Exterior:2 side pockets(These two side pockets only suitable for holding some small items,like keys,lipstick ect;Not suitable to fit water bottle) ,3 client zipped pockets,1 back zipper pocket;Interior:2 zipper pocket and two open pocket,the number of pockets make it easy to compartmentalize things you need to access quickly and readily without pulling everything out to get at it.\r\nMulti-Functional crossbody bag:Fashionable style,can be used as a handbag,shoulder bag or crossbody bag with a variety of storage options & organization features, ideal for travel,shopping,and daily using.\r\nComfortable: Lightweight nylon means less stress on sensitive shoulder muscles.Even after a full day of sightseeing,shopping,or errands this casual yet stylish tote won’t tug.\r\n",
@@ -189,7 +189,7 @@ Upper: NLOCK webbing provides a secure, stay-put fit. Breathable mesh promotes c
             "category_id" => 3,
         ]);
 
-        Product::create([
+        Product::firstOrCreate([
             "name" => "The Canvas Medium Tote Bag",
             "slug" => Str::slug("The Canvas Medium Tote Bag"),
             "description" => "Easy top handles and an optional, adjustable strap provide convenient carrying options for this roomy canvas tote that folds flat for storage or travel.
@@ -207,7 +207,7 @@ Upper: NLOCK webbing provides a secure, stay-put fit. Breathable mesh promotes c
             "category_id" => 3,
         ]);
 
-        Product::create([
+        Product::firstOrCreate([
             "name" => "F Gear Tricoder 32 Ltrs Casual Backpack",
             "slug" => Str::slug("F Gear Tricoder 32 Ltrs Casual Backpack"),
             "description" => "Outer Material: Polyester
@@ -223,7 +223,7 @@ Upper: NLOCK webbing provides a secure, stay-put fit. Breathable mesh promotes c
             "category_id" => 3,
         ]);
 
-        Product::create([
+        Product::firstOrCreate([
             "name" => "The Leather Small Tote Bag",
             "slug" => Str::slug("The Leather Small Tote Bag"),
             "description" => "Richly grained leather elevates this compact tote sized to hold the daily essentials and subtly branded with tonal logo embossing. Rolled top handles and a removable strap offer extra carrying options for your look.
@@ -240,7 +240,7 @@ Upper: NLOCK webbing provides a secure, stay-put fit. Breathable mesh promotes c
             "category_id" => 3,
         ]);
 
-        Product::create([
+        Product::firstOrCreate([
             "name" => "The Cristina Small Satchel",
             "slug" => Str::slug("The Cristina Small Satchel"),
             "description" => "Antique logo hardware and a ruched topline highlight the sleek leather exterior and geometric profile of a scaled-down satchel fitted with an optional crossbody strap for hands-free wear.

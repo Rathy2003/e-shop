@@ -13,13 +13,13 @@ class CategorySeeder extends Seeder
      */
     public function run(): void
     {
-        Category::create([
+        Category::firstOrCreate([
             "name" => "Shoes"
         ]);
-        Category::create([
+        Category::firstOrCreate([
             "name" => "Clothes"
         ]);
-        Category::create([
+        Category::firstOrCreate([
             "name" => "Bags"
         ]);
     }
