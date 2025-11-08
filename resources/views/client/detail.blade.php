@@ -266,11 +266,11 @@
 
                 @if($product->discount > 0)
                     <div class="flex gap-2 items-end mt-2">
-                        <p class="mt-2 font-bold text-black text-xl md:text-2xl">${{number_format($product->price - $discountPrice,2)}}</p>
-                        <del class="mt-2 text-[12px] md:text-[15px] font-bold pb-[2px] text-black">${{number_format($product->price,2)}}</del>
+                        <p class="mt-2 font-bold text-black text-xl md:text-2xl">{{number_format($product->price - $discountPrice,0)}}៛</p>
+                        <del class="mt-2 text-[12px] md:text-[15px] font-bold pb-[2px] text-black">{{number_format($product->price,0)}}៛</del>
                     </div>
                 @else
-                    <p class="mt-5 font-bold text-black">${{$product->price}}</p>
+                    <p class="mt-5 font-bold text-black">{{number_format($product->price,0)}}៛</p>
                 @endif
                 {{-- End Product Price --}}
 

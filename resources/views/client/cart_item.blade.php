@@ -137,8 +137,8 @@
                                             <button @click="increaseQuantity(item)" class="font-bold text-xl cursor-pointer select-none">+</button>
                                         </div>
                                     </td>
-                                    <td class="text-center">$[[item.product.price]]</td>
-                                    <td class="text-center">$[[(item.product.price * item.quantity).toFixed(2)]]</td>
+                                    <td class="text-center">[[(item.product.price * 1).toFixed(0)]]៛</td>
+                                    <td class="text-center">[[(item.product.price * item.quantity).toFixed(0)]]៛</td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -193,7 +193,7 @@
 
                             <div class="flex gap-5 items-center mt-3">
                                 {{-- Start Product Price --}}
-                                <h2 class="font-bold">$[[item.product.discount > 0 ? formatPrice(item.product.price *  item.product.discount / 100) : formatPrice(item.product.price)]]</h2>
+                                <h2 class="font-bold">[[item.product.discount > 0 ? formatPrice(item.product.price *  item.product.discount / 100) : formatPrice(item.product.price)]]៛</h2>
                                 {{-- End Product Price --}}
 
                                 {{-- Start Quantity Adjustment --}}
@@ -226,7 +226,7 @@
                     class="fixed h-[120px] sm:h-[100px] py-2 w-full flex flex-col sm:flex-row items-center px-5 sm:px-8 justify-between bottom-0 left-0 bg-white border-t border-gray-200 z-10">
                     <div class="select-none w-full flex flex-row sm:flex-col justify-between sm:justify-start gap-2">
                         <h3 class="font-bold text-md sm:text-lg">([[getSelectedCartItem.length]]) Selected Item</h3>
-                        <h4 class="font-bold text-md sm:text-lg text-gray-600">Total : [[getTotalSelectedCartItem]]$</h4>
+                        <h4 class="font-bold text-md sm:text-lg text-gray-600">Total : [[getTotalSelectedCartItem]]៛</h4>
                     </div>
                     <button @click="processCheckout()" class="btn btn-primary w-full sm:w-auto" :disabled="getSelectedCartItem == 0">Process To Checkout</button>
 
@@ -292,7 +292,7 @@
                                         {{-- Start Quantity and Total --}}
                                         <div class="flex gap-3 items-center mt-3">
                                             <p class="text-sm w-fit bg-[var(--secondary-color)] py-1 px-3 rounded text-gray-500">x[[item.quantity]]</p>
-                                            <p class="text-sm text-gray-500">$[[item.product.discount > 0 ? Number((item.product.price - (item.product.price  * item.product.discount / 100)) * item.quantity ).toFixed(2) : Number(item.product.price * item.quantity).toFixed(2)]]</p>
+                                            <p class="text-sm text-gray-500">[[item.product.discount > 0 ? Number((item.product.price - (item.product.price  * item.product.discount / 100)) * item.quantity ).toFixed(0) : Number(item.product.price * item.quantity).toFixed(0)]]៛</p>
                                         </div>
                                         {{-- End Quantity and Total --}}
                                     </div>
@@ -331,7 +331,7 @@
                             <div class="space-y-2">
                                 <div class="flex justify-between">
                                     <p>Subtotal</p>
-                                    <p>$[[getTotalSelectedCartItem]]</p>
+                                    <p>[[getTotalSelectedCartItem]]៛</p>
                                 </div>
                                 <div class="flex justify-between">
                                     <p>Shipping</p>
@@ -339,7 +339,7 @@
                                 </div>
                                 <div class="flex justify-between font-bold text-lg border-t pt-4 mt-2">
                                     <p>Total</p>
-                                    <p>$[[getTotalSelectedCartItem]]</p>
+                                    <p>[[getTotalSelectedCartItem]]៛</p>
                                 </div>
                             </div>
                             <button @click="processOrder" :disabled="!selectedPaymentMethod"
@@ -383,7 +383,7 @@
                                 <div class="text-sm px-4 py-2 rounded bg-[var(--secondary-color)]">
                                     x[[item.quantity]]
                                 </div>
-                                <h1 class="font-bold text-lg">$[[item.product.price]]</h1>
+                                <h1 class="font-bold text-lg">[[(item.product.price * 1).toFixed(0)]]៛</h1>
                             </div>
                         </div>
                     </div>
@@ -415,7 +415,7 @@
                     selectedItem.forEach(item => {
                         total += item.product.discount > 0 ? (item.product.price - (item.product.price * item.product.discount / 100)) * item.quantity : item.product.price * item.quantity;
                     })
-                    return total.toFixed(2)
+                    return total.toFixed(0)
                 },
             },
             data() {
@@ -525,7 +525,7 @@
                     }
                 },
                 formatPrice(price){
-                    return Number(price).toFixed(2)
+                    return Number(price).toFixed(0)
                 },
                 processCheckout(){
                     this.page_index=1;

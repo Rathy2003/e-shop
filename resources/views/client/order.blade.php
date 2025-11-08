@@ -37,14 +37,14 @@
                                      alt="iphone12" class="w-16 h-16 object-cover rounded-md border">
                                 <div>
                                     <p class="font-semibold">[[item.product.name]]</p>
-                                    <p class="text-sm text-gray-500">[[item.quantity]] x [[item.price]]$</p>
+                                    <p class="text-sm text-gray-500">[[item.quantity]] x [[item.price]]៛</p>
                                 </div>
                             </div>
-                            <p class="font-semibold">[[item.price * item.quantity]]$</p>
+                            <p class="font-semibold">[[(item.price * item.quantity).toFixed(0)]]៛</p>
                         </div>
                 </div>
                 <div class="text-right font-bold text-lg mt-4 pt-4 border-t">
-                    Total: [[order.total]]$
+                    Total: [[Number(order.total).toFixed(0)]]៛
                 </div>
             </div>
         </div>

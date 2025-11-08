@@ -30,23 +30,23 @@
 {{--                        <p class="text-sm text-gray-500">Just Arrived</p>--}}
 {{--                    </div>--}}
 {{--                </div>--}}
-                <div class="owl-carousel">
+                <div>
                     <div>
                         <img src="{{asset("images/slider/slide_1.jpg")}}"
                              alt="Slider 1" class="rounded-lg shadow-2xl w-full h-full object-cover">
                     </div>
-                    <div>
-                        <img src="{{asset("images/slider/slide_2.jpg")}}"
-                             alt="Slider 2" class="rounded-lg shadow-2xl w-full h-full object-cover">
-                    </div>
-                    <div>
-                        <img src="{{asset("images/slider/slide_3.jpg")}}"
-                             alt="Slider 3" class="rounded-lg shadow-2xl w-full h-full object-cover">
-                    </div>
-                    <div>
-                        <img src="{{asset("images/slider/slide_4.jpg")}}"
-                             alt="Slider 4" class="rounded-lg shadow-2xl w-full h-full object-cover">
-                    </div>
+{{--                    <div>--}}
+{{--                        <img src="{{asset("images/slider/slide_2.jpg")}}"--}}
+{{--                             alt="Slider 2" class="rounded-lg shadow-2xl w-full h-full object-cover">--}}
+{{--                    </div>--}}
+{{--                    <div>--}}
+{{--                        <img src="{{asset("images/slider/slide_3.jpg")}}"--}}
+{{--                             alt="Slider 3" class="rounded-lg shadow-2xl w-full h-full object-cover">--}}
+{{--                    </div>--}}
+{{--                    <div>--}}
+{{--                        <img src="{{asset("images/slider/slide_4.jpg")}}"--}}
+{{--                             alt="Slider 4" class="rounded-lg shadow-2xl w-full h-full object-cover">--}}
+{{--                    </div>--}}
                 </div>
             </div>
         </div>
@@ -93,7 +93,7 @@
                         <div class="p-4">
                             <h3 class="font-semibold text-lg">{{$trending->name}}</h3>
                             <p class="text-gray-500 text-sm">{{$trending->category->name}}</p>
-                            <p class="mt-2 font-bold text-black">{{$trending->price}}$</p>
+                            <p class="mt-2 font-bold text-black">{{number_format($trending->price,0)}}៛</p>
                         </div>
                     </a>
                 @endforeach

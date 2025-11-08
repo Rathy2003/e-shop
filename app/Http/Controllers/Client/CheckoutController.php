@@ -40,8 +40,8 @@ class CheckoutController extends Controller
         $payment_data = $khqr->generateQRCode($total_payment);
         $qrcode_string = $payment_data['qrcode'];
         $md5_hash = $payment_data['md5'];
-        $currency = "USD";
-        $username = "TAN RATHY";
+        $currency = "KHR";
+        $username  = env("BAKONG_MERCHANT_NAME");
 
         // create payment (save payment data to database)
         $payment = Payment::create([

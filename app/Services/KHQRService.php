@@ -32,7 +32,7 @@ class KHQRService
             bakongAccountID: 'torn_rathy2303@wing',
             merchantName: env("BAKONG_MERCHANT_NAME"),
             merchantCity: env("BAKONG_MERCHANT_CITY"),
-            currency: KHQRData::CURRENCY_USD,
+            currency: KHQRData::CURRENCY_KHR,
             amount: $amount
         );
         $payment_data = BakongKHQR::generateIndividual($individualInfo);

@@ -29,9 +29,9 @@ Name: '.$name.'
 Email: '.$email.'
 🛍️ *Items Ordered:*
 '.$string_product.'
-🚚 *Shipping:* Delivery Fee – $1
+🚚 *Shipping:* Delivery Fee – 2000៛
 💳 *Payment Method:* KHQR (Paid via KHQR)
-💰 *Total Amount:* $'.$total_amount.' USD
+💰 *Total Amount:* ៛'.$total_amount.' KHR
 📌 *Notes from Customer:*
 
 "Please deliver between 2–5 Days."
