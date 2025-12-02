@@ -1,5 +1,8 @@
-# ESHOP Project
-ESHOP is a e-commerce project allow user.
+<center><h1>ESHOP</h1></center>
+EHSOP Project propose is integrate with payment gateway.sent notification to telegram, email when user place order.
+
+## Project Description
+___
 + Screen
  Step 1
  - Product catalog
@@ -23,13 +26,43 @@ ESHOP is a e-commerce project allow user.
  - user_cart(id, user_id, product_id, qty) 
  - order (id, user_id, date_time, total, paid, delivery)
  - order_detail (id, order_id, product_id, qty, price)
-# Requirement
+
+## Project Screenshot
+___
+<div>
+    <img width="280" src="https://i.imgur.com/DO6TOkQ.jpeg"/>
+    <img width="280" src="https://i.imgur.com/oREu413.jpeg"/>
+    <img width="280" src="https://i.imgur.com/xEs8GmH.jpeg"/>
+    <img width="280" src="https://i.imgur.com/rnwJMFl.jpeg"/>
+    <img width="280" src="https://i.imgur.com/jBRiOVi.jpeg"/>
+    <img width="280" src="https://i.imgur.com/At7OVLH.jpeg"/>
+    <img width="280" src="https://i.imgur.com/PLl3Z9J.jpeg"/>
+    <img width="280" src="https://i.imgur.com/PTvbiQT.jpeg"/>
+</div>
+
+## Project Link
+___
+- url: https://www.eshopcambodia.shop/
+
+## Technologies
+___
+- Frontend
+  - Blade, VueJS CDN
+  - Tailwind CSS
+- Backend
+  - Laravel
+- Database
+  - MySQL
+
+## Requirement
+___
 - php8.3+
 - composer v8.2.x
 - laravel 12
 - mysql 8.2
 
-# Installation
+## Installation
+___
 #### Step 1
 ```git clone https://github.com/Rathy2003/e-shop```
 #### Step 2
